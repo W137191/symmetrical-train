@@ -4,6 +4,11 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 let proxyProc = null;
+let outChannel = null;
+
+function log(...a) {
+  if (outChannel) outChannel.appendLine(a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' '));
+}
 
 // 从 VS Code 设置读取（不写死地址/端口/模型，便于切换）
 function cfg() {
@@ -91,10 +96,12 @@ function streamChat(webview, msg) {
   }, res => {
     let buf = '';
     res.setEncoding('utf8');
+    log('响应状态', res.statusCode);
     if (res.statusCode !== 200) {
       let errBody = '';
       res.on('data', c => { errBody += c; });
       res.on('end', () => {
+        log('非 200 响应体', errBody.slice(0, 800));
         let detail = errBody;
         try { const o = JSON.parse(errBody); detail = o.error || o.detail || errBody; } catch (e) {}
         webview.postMessage({ type: 'error', text: '代理返回 ' + res.statusCode + '：' + detail });
@@ -117,18 +124,21 @@ function streamChat(webview, msg) {
           if (!d) continue;
           if (d.reasoning) webview.postMessage({ type: 'delta', kind: 'reasoning', text: d.reasoning });
           if (d.content) webview.postMessage({ type: 'delta', kind: 'content', text: d.content });
-        } catch (e) { /* 忽略不完整分片 */ }
+        } catch (e) {
+          log('SSE 分片解析失败:', data.slice(0, 300), e && e.message);
+        }
       }
     });
     res.on('end', () => webview.postMessage({ type: 'done' }));
   });
-  req.on('error', e => webview.postMessage({ type: 'error', text: String(e) }));
+  req.on('error', e => { log('请求异常', String(e)); webview.postMessage({ type: 'error', text: String(e) }); });
   req.write(payload);
   req.end();
 }
 
 function activate(context) {
   const proxyScript = path.join(context.extensionPath, '..', 'chat-server.py');
+  outChannel = vscode.window.createOutputChannel('千问侧边栏');
   const provider = {
     resolveWebviewView(webviewView) {
       const webview = webviewView.webview;
@@ -144,10 +154,13 @@ function activate(context) {
         else if (msg.type === 'startProxy')
           ensureProxy(proxyScript).then(ok => webview.postMessage({ type: 'status', ok, msg: ok ? '已连接' : '启动失败，请检查 python 是否在 PATH' }));
       });
-      ensureProxy(proxyScript).then(ok => webview.postMessage({
-        type: 'status', ok,
-        msg: ok ? '已连接' : '未连接（点「启动服务」或先按 F5 启动代理）'
-      }));
+      ensureProxy(proxyScript).then(ok => {
+        log('代理探测', ok ? '已连接' : '未连接');
+        webview.postMessage({
+          type: 'status', ok,
+          msg: ok ? '已连接' : '未连接（点「启动服务」或先按 F5 启动代理）'
+        });
+      });
     }
   };
   context.subscriptions.push(vscode.window.registerWebviewViewProvider('qwenChatView', provider));
