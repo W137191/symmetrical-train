@@ -8,6 +8,7 @@
 """
 import json
 import os
+import sys
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -56,6 +57,7 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- 路由 ----------
     def do_GET(self):
         path = self.path.split("?", 1)[0]
+        print("[请求] GET %s" % path, file=sys.stderr)
         if path in ("/", "/index.html"):
             self._serve_index()
         elif path.startswith("/v1/"):
@@ -64,6 +66,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(404, {"error": "not found"})
 
     def do_POST(self):
+        print("[请求] POST %s" % self.path.split("?", 1)[0], file=sys.stderr)
         if self.path.split("?", 1)[0].startswith("/v1/"):
             self._proxy("POST")
         else:
@@ -89,9 +92,11 @@ class Handler(BaseHTTPRequestHandler):
             resp = urllib.request.urlopen(req, timeout=UPSTREAM_TIMEOUT)
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "replace")
+            print("[代理错误] 上游返回 HTTP %d: %s" % (e.code, detail[:500]), file=sys.stderr)
             self._send_json(e.code, {"error": "upstream_error", "detail": detail})
             return
         except Exception as e:
+            print("[代理错误] 无法连接上游 API: %s" % e, file=sys.stderr)
             self._send_json(502, {
                 "error": "无法连接到 API 服务器 10.1.88.114:8001",
                 "detail": str(e),

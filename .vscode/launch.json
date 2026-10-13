@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "启动千问聊天代理 (chat-server)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/chat-server.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "serverReadyAction": {
+        "pattern": "http://localhost:8000",
+        "action": "openExternally",
+        "uriFormat": "http://localhost:8000"
+      }
+    }
+  ]
+}
