@@ -3,24 +3,31 @@ const http = require('http');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const HOST = '127.0.0.1';
-const PORT = 8000;
-const MODEL = 'qwen3.5-122b';
-
 let proxyProc = null;
+
+// 从 VS Code 设置读取（不写死地址/端口/模型，便于切换）
+function cfg() {
+  const c = vscode.workspace.getConfiguration('qwenCampus');
+  return {
+    host: c.get('host', '127.0.0.1'),
+    port: c.get('port', 8000),
+    model: c.get('model', 'qwen3.5-122b')
+  };
+}
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // 探测本地代理是否已启动
 function ping() {
+  const { host, port } = cfg();
   return new Promise(resolve => {
-    const req = http.get({ host: HOST, port: PORT, path: '/', timeout: 1000 }, r => { r.resume(); resolve(true); });
+    const req = http.get({ host, port, path: '/', timeout: 1000 }, r => { r.resume(); resolve(true); });
     req.on('error', () => resolve(false));
     req.on('timeout', () => { req.destroy(); resolve(false); });
   });
 }
 
-// 未启动时自动拉起 chat-server.py（仅当我们自己拉起的才会在退出时回收）
+// 未启动时自动拉起 chat-server.py（仅我们自己拉起的才在退出时回收）
 async function ensureProxy(proxyScript) {
   if (await ping()) return true;
   try {
@@ -68,9 +75,10 @@ function getHtml(webview, scriptUri, cssUri) {
 
 // 调用本地代理，解析 SSE 流式回传
 function streamChat(webview, msg) {
+  const { host, port, model } = cfg();
   const messages = (msg.history || []).concat([{ role: 'user', content: msg.text }]);
   const payload = JSON.stringify({
-    model: MODEL,
+    model,
     messages,
     temperature: typeof msg.temperature === 'number' ? msg.temperature : 0.7,
     max_tokens: msg.maxTokens || 2048,
@@ -78,7 +86,7 @@ function streamChat(webview, msg) {
     chat_template_kwargs: { enable_thinking: msg.thinking !== false }
   });
   const req = http.request({
-    host: HOST, port: PORT, path: '/v1/chat/completions', method: 'POST',
+    host, port, path: '/v1/chat/completions', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
   }, res => {
     let buf = '';
@@ -132,6 +140,11 @@ function activate(context) {
     }
   };
   context.subscriptions.push(vscode.window.registerWebviewViewProvider('qwenChatView', provider));
+
+  // 命令面板也可打开侧边栏（对应校园版千问“命令启动”的思路，但无需 Key）
+  context.subscriptions.push(vscode.commands.registerCommand('qwenChat.open', () => {
+    vscode.commands.executeCommand('workbench.view.extension.qwenChat');
+  }));
 }
 
 function deactivate() {

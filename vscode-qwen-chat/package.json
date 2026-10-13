@@ -9,8 +9,14 @@
   },
   "categories": ["Other"],
   "main": "./extension.js",
-  "activationEvents": ["onView:qwenChatView"],
+  "activationEvents": ["onView:qwenChatView", "onCommand:qwenChat.open"],
   "contributes": {
+    "commands": [
+      {
+        "command": "qwenChat.open",
+        "title": "千问: 打开侧边栏对话"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -28,6 +34,26 @@
           "name": "对话"
         }
       ]
+    },
+    "configuration": {
+      "title": "千问校园版",
+      "properties": {
+        "qwenCampus.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "本地代理监听地址（一般无需改动）"
+        },
+        "qwenCampus.port": {
+          "type": "number",
+          "default": 8000,
+          "description": "本地代理端口（一般无需改动）"
+        },
+        "qwenCampus.model": {
+          "type": "string",
+          "default": "qwen3.5-122b",
+          "description": "对话使用的模型名"
+        }
+      }
     }
   }
 }
