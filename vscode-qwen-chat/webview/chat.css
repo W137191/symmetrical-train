@@ -1,0 +1,24 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--vscode-font-family, sans-serif); background: var(--vscode-editor-background); color: var(--vscode-foreground); }
+.app { display: flex; flex-direction: column; height: 100vh; }
+.top { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid var(--vscode-panel-border); }
+#status.ok { color: #4ec9b0; }
+#status.bad { color: #d7ba7d; }
+.mini { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
+#messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 92%; }
+.msg.user { align-self: flex-end; }
+.msg.assistant { align-self: flex-start; }
+.who { font-size: 11px; opacity: .7; margin-bottom: 2px; }
+.body { padding: 8px 10px; border-radius: 8px; white-space: pre-wrap; word-break: break-word; line-height: 1.5; }
+.msg.user .body { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+.msg.assistant .body { background: var(--vscode-editorWidget-background, #2a2d2e); border: 1px solid var(--vscode-panel-border); }
+.think { margin-bottom: 6px; }
+.think summary { cursor: pointer; font-size: 12px; opacity: .8; }
+.think-body { font-size: 12px; opacity: .85; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+.composer { border-top: 1px solid var(--vscode-panel-border); padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.opts { display: flex; gap: 14px; font-size: 12px; align-items: center; }
+.num { width: 56px; }
+textarea { width: 100%; resize: vertical; background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 4px; padding: 6px; font-family: inherit; }
+#send { align-self: flex-end; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 4px 16px; border-radius: 4px; cursor: pointer; }
+#send:disabled { opacity: .5; cursor: default; }

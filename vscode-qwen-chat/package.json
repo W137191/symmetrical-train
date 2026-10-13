@@ -1,0 +1,33 @@
+{
+  "name": "qwen-campus-chat",
+  "displayName": "千问校园版（侧边栏）",
+  "description": "在 VS Code 侧边栏直接对话校园内网 Qwen3.5-122b",
+  "version": "0.1.0",
+  "publisher": "hy3",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "main": "./extension.js",
+  "activationEvents": ["onView:qwenChatView"],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "qwenChat",
+          "title": "千问",
+          "icon": "images/qwen.svg"
+        }
+      ]
+    },
+    "views": {
+      "qwenChat": [
+        {
+          "type": "webview",
+          "id": "qwenChatView",
+          "name": "对话"
+        }
+      ]
+    }
+  }
+}
