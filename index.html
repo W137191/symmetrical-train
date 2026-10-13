@@ -655,6 +655,9 @@ function toApiContent(msg){
   if(msg.role === "assistant") return msg.content || "";
   if(msg.role === "user"){
     if(msg.parts && msg.parts.length){
+      // 仅文本 parts → 合并成字符串（兜底，防止单文本数组触发 400）
+      const hasNonText = msg.parts.some(p => p.type!=="text");
+      if(!hasNonText) return msg.parts.map(p=>p.text||"").join("\n");
       return msg.parts.map(p => {
         if(p.type==="text") return {type:"text", text:p.text};
         if(p.type==="image") return {type:"image_url", image_url:{url:p.dataUrl}};
@@ -692,13 +695,18 @@ async function send(){
   if(location.protocol === "file:"){ $("fileWarn").style.display="block"; return; }
 
   const c = activeConv();
-  const parts = [];
-  if(text) parts.push({type:"text", text});
-  state.attachments.forEach(a => parts.push(a.type==="image"
-    ? {type:"image", name:a.name, dataUrl:a.dataUrl}
-    : {type:"file", name:a.name, text:a.text}));
-
-  const userMsg = parts.length ? {role:"user", parts} : {role:"user", content:text};
+  // 仅纯文字（无附件）时直接发字符串，避免单文本数组被后端拒绝 → 400
+  let userMsg;
+  if(state.attachments.length){
+    const parts = [];
+    if(text) parts.push({type:"text", text});
+    state.attachments.forEach(a => parts.push(a.type==="image"
+      ? {type:"image", name:a.name, dataUrl:a.dataUrl}
+      : {type:"file", name:a.name, text:a.text}));
+    userMsg = {role:"user", parts};
+  } else {
+    userMsg = {role:"user", content:text};
+  }
   c.messages.push(userMsg);
   ensureTitle(c);
   saveConversations(); refreshEmpty(); addUserMsg(userMsg);
