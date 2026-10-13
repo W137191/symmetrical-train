@@ -34,6 +34,7 @@ function appendDelta(body, text) {
 }
 
 window.addEventListener('message', e => {
+  try {
   const m = e.data;
   if (m.type === 'status') {
     statusEl.textContent = m.ok ? '● 已连接' : '○ ' + (m.msg || '未连接');
@@ -52,11 +53,16 @@ window.addEventListener('message', e => {
     streaming = false; sendBtn.disabled = false; inputEl.disabled = false;
     const last = document.querySelector('.msg.assistant:last-child .text');
     if (last) history.push({ role: 'assistant', content: last.textContent });
-  } else if (m.type === 'error') {
-    statusEl.textContent = '○ 错误: ' + m.text; statusEl.className = 'bad';
-    streaming = false; sendBtn.disabled = false;
+    } else if (m.type === 'error') {
+      statusEl.textContent = '○ 错误: ' + m.text; statusEl.className = 'bad';
+      streaming = false; sendBtn.disabled = false;
+    }
+  } catch (err) {
+    const s = document.getElementById('status');
+    if (s) { s.textContent = '○ JS 异常: ' + err; s.className = 'bad'; }
+    console.error(err);
   }
-});
+  });
 
 function send() {
   if (streaming) return;

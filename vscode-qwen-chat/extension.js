@@ -91,6 +91,16 @@ function streamChat(webview, msg) {
   }, res => {
     let buf = '';
     res.setEncoding('utf8');
+    if (res.statusCode !== 200) {
+      let errBody = '';
+      res.on('data', c => { errBody += c; });
+      res.on('end', () => {
+        let detail = errBody;
+        try { const o = JSON.parse(errBody); detail = o.error || o.detail || errBody; } catch (e) {}
+        webview.postMessage({ type: 'error', text: '代理返回 ' + res.statusCode + '：' + detail });
+      });
+      return;
+    }
     res.on('data', chunk => {
       buf += chunk;
       let idx;
@@ -102,6 +112,7 @@ function streamChat(webview, msg) {
         if (data === '[DONE]') { webview.postMessage({ type: 'done' }); return; }
         try {
           const j = JSON.parse(data);
+          if (j.error) { webview.postMessage({ type: 'error', text: '模型返回错误：' + (j.error.detail || JSON.stringify(j.error)) }); return; }
           const d = j.choices && j.choices[0] && j.choices[0].delta;
           if (!d) continue;
           if (d.reasoning) webview.postMessage({ type: 'delta', kind: 'reasoning', text: d.reasoning });
