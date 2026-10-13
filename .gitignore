@@ -1,0 +1,17 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 日志
+*.log
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地环境（如有虚拟环境）
+venv/
+.venv/
+.env
