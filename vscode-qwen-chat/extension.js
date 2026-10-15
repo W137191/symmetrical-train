@@ -2,6 +2,7 @@ const vscode = require('vscode');
 const http = require('http');
 const path = require('path');
 const { spawn } = require('child_process');
+const fs = require('fs');
 
 let proxyProc = null;
 let outChannel = null;
@@ -21,6 +22,19 @@ function cfg() {
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// 定位 chat-server.py：开发模式在扩展目录上级；全局安装则在 D:/1/122
+function resolveProxyScript(context) {
+  const candidates = [
+    path.join(context.extensionPath, '..', 'chat-server.py'),
+    'D:\\1\\122\\chat-server.py',
+    path.join(context.extensionPath, 'chat-server.py')
+  ];
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch (e) {}
+  }
+  return candidates[1];
+}
 
 // 探测本地代理是否已启动
 function ping() {
@@ -138,7 +152,7 @@ function streamChat(webview, msg) {
 
 function activate(context) {
  try {
-  const proxyScript = path.join(context.extensionPath, '..', 'chat-server.py');
+  const proxyScript = resolveProxyScript(context);
   outChannel = vscode.window.createOutputChannel('千问侧边栏');
   const provider = {
     resolveWebviewView(webviewView) {
