@@ -137,10 +137,12 @@ function streamChat(webview, msg) {
 }
 
 function activate(context) {
+ try {
   const proxyScript = path.join(context.extensionPath, '..', 'chat-server.py');
   outChannel = vscode.window.createOutputChannel('千问侧边栏');
   const provider = {
     resolveWebviewView(webviewView) {
+      try {
       const webview = webviewView.webview;
       webview.options = {
         enableScripts: true,
@@ -161,6 +163,9 @@ function activate(context) {
           msg: ok ? '已连接' : '未连接（点「启动服务」或先按 F5 启动代理）'
         });
       });
+      } catch (e) {
+        vscode.window.showErrorMessage('千问视图加载失败: ' + (e && e.message ? e.message : e));
+      }
     }
   };
   context.subscriptions.push(vscode.window.registerWebviewViewProvider('qwenChatView', provider));
@@ -169,6 +174,12 @@ function activate(context) {
   context.subscriptions.push(vscode.commands.registerCommand('qwenChat.open', () => {
     vscode.commands.executeCommand('workbench.view.extension.qwenChat');
   }));
+  } catch (e) {
+    const msg = '千问扩展激活失败: ' + (e && e.message ? e.message : e);
+    vscode.window.showErrorMessage(msg);
+    if (outChannel) outChannel.appendLine('激活异常: ' + (e && e.stack ? e.stack : e));
+    throw e;
+  }
 }
 
 function deactivate() {
