@@ -33,12 +33,28 @@ function appendDelta(body, text) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+function addToolCard(m) {
+  const div = document.createElement('div');
+  div.className = 'tool' + (m.status === 'error' ? ' err' : '');
+  const head = document.createElement('div'); head.className = 't-head';
+  head.textContent = (m.status === 'error' ? '❌ 工具错误: ' : '🔧 工具: ') + m.name + (m.args && m.args.path ? '  ' + m.args.path : '');
+  div.appendChild(head);
+  if (m.result) {
+    const body = document.createElement('div'); body.className = 't-body'; body.textContent = m.result;
+    div.appendChild(body);
+  }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 window.addEventListener('message', e => {
   try {
   const m = e.data;
   if (m.type === 'status') {
     statusEl.textContent = m.ok ? '● 已连接' : '○ ' + (m.msg || '未连接');
     statusEl.className = m.ok ? 'ok' : 'bad';
+  } else if (m.type === 'tool') {
+    addToolCard(m);
   } else if (m.type === 'delta') {
     if (m.kind === 'reasoning') {
       let t = document.querySelector('.msg.assistant:last-child .think-body');
@@ -53,16 +69,16 @@ window.addEventListener('message', e => {
     streaming = false; sendBtn.disabled = false; inputEl.disabled = false;
     const last = document.querySelector('.msg.assistant:last-child .text');
     if (last) history.push({ role: 'assistant', content: last.textContent });
-    } else if (m.type === 'error') {
-      statusEl.textContent = '○ 错误: ' + m.text; statusEl.className = 'bad';
-      streaming = false; sendBtn.disabled = false;
-    }
+  } else if (m.type === 'error') {
+    statusEl.textContent = '○ 错误: ' + m.text; statusEl.className = 'bad';
+    streaming = false; sendBtn.disabled = false; inputEl.disabled = false;
+  }
   } catch (err) {
     const s = document.getElementById('status');
     if (s) { s.textContent = '○ JS 异常: ' + err; s.className = 'bad'; }
     console.error(err);
   }
-  });
+});
 
 function send() {
   if (streaming) return;
@@ -78,7 +94,8 @@ function send() {
     history: hist,
     text,
     temperature: parseFloat($('temp').value) || 0.7,
-    thinking: $('thinking').checked
+    thinking: $('thinking').checked,
+    agent: $('agent') ? $('agent').checked : false
   });
 }
 
