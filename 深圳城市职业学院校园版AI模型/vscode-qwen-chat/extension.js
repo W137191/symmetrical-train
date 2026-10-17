@@ -23,11 +23,11 @@ function cfg() {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// 定位 chat-server.py：开发模式在扩展目录上级；全局安装则在 D:/1/122
+// 定位 chat-server.py：开发模式在扩展目录上级；全局安装则在 D:/1/122/深圳城市职业学院校园版AI模型
 function resolveProxyScript(context) {
   const candidates = [
     path.join(context.extensionPath, '..', 'chat-server.py'),
-    'D:\\1\\122\\chat-server.py',
+    'D:\\1\\122\\深圳城市职业学院校园版AI模型\\chat-server.py',
     path.join(context.extensionPath, 'chat-server.py')
   ];
   for (const c of candidates) {
