@@ -66,7 +66,7 @@
 4. 状态显示「● 已连接」后即可对话。
 
 > 备用一键启动：双击桌面 `QwenSidebar.bat`（或已修好的 `运行千问侧边栏扩展.bat`）直接打开本仓库并进入 VS Code。
-> 开发者模式（F5 / `code --extensionDevelopmentPath`）在本机容易「闪退」，故默认走全局安装路径；之后若要改扩展源码，双击桌面 `QwenSidebar.bat`（已合并「同步扩展 + 打开 VS Code」）即可，若 VS Code 已在运行则再按 `Ctrl+Shift+P` → `Developer: Reload Window` 生效（沙箱环境下无法在本机建目录 junction，故用「副本 + 一键同步」替代自动软链）。
+> 开发者模式（F5 / `code --extensionDevelopmentPath`）在本机容易「闪退」，故默认走全局安装路径；之后若要改扩展源码，双击桌面 `QwenSidebar.bat`（已合并「同步扩展 + 打开 VS Code + 启动网页版」）即可，若 VS Code 已在运行则再按 `Ctrl+Shift+P` → `Developer: Reload Window` 生效（沙箱环境下无法在本机建目录 junction，故用「副本 + 一键同步」替代自动软链）。
 
 ## 为什么需要本地代理
 
