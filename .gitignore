@@ -1,0 +1,21 @@
+# Built application files
+*.apk
+*.aab
+
+# Gradle / build
+.gradle/
+build/
+app/build/
+local.properties
+
+# IDE
+*.iml
+.idea/
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Keystores (never commit signing keys)
+*.keystore
+*.jks

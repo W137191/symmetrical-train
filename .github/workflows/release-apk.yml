@@ -1,0 +1,66 @@
+name: Release APK
+
+# 路径 B：推送到 GitHub 后自动编译并签名 Release APK，发布到 GitHub Release。
+# 默认用 CI 临时生成的签名密钥（零配置即可安装）；
+# 想用自己的密钥，在仓库 Settings → Secrets 添加：KEYSTORE_BASE64 / KEY_ALIAS / KEY_PASSWORD / KEYSTORE_PASSWORD。
+
+on:
+  push:
+    branches: [main, master, psapk]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Prepare signing keystore
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'psapk' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'android' }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'android' }}
+        run: |
+          mkdir -p "${{ github.workspace }}/sign"
+          KS="${{ github.workspace }}/sign/release.keystore"
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$KS"
+          else
+            keytool -genkeypair -v -keystore "$KS" -keyalg RSA -keysize 2048 -validity 10000 \
+              -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+              -dname "CN=PsApk, OU=Dev, O=PsApk, C=CN"
+          fi
+          echo "KEYSTORE_FILE=$KS" >> "$GITHUB_ENV"
+          echo "KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+          echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Build release APK
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.4
+          arguments: assembleRelease
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.1.0-build-${{ github.run_number }}
+          name: PsApk Build ${{ github.run_number }}（签名 Release）
+          prerelease: true
+          files: app/build/outputs/apk/release/app-release.apk
