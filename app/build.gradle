@@ -50,6 +50,11 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    aaptOptions {
+        // TFLite 模型需以未压缩方式打包，避免被压缩后无法 mmap
+        noCompress "tflite"
+    }
 }
 
 dependencies {
@@ -57,4 +62,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    // 端侧 ML 修复（LaMa-Dilated / LiteRT）：仅在 assets 中存在模型权重时启用，缺失则自动回退经典 Telea
+    implementation 'org.tensorflow:tensorflow-lite:2.16.1'
 }

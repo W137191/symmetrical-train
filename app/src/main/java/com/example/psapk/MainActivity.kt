@@ -130,7 +130,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             setBusy(true)
             try {
-                val result = withContext(Dispatchers.Default) { Inpainter.inpaint(bmp, mask) }
+                val result = withContext(Dispatchers.Default) {
+                    // 优先端侧 ML（LaMa-Dilated）；权重缺失/失败则回退经典 Telea FMM
+                    MLInpainter.inpaint(this@MainActivity, bmp, mask) ?: Inpainter.inpaint(bmp, mask)
+                }
                 binding.editView.storeUndoFull()
                 binding.editView.applyResult(result)
                 toast("修复完成，可继续编辑或保存")

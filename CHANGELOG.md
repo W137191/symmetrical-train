@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 端侧 ML 修复（LaMa-Dilated / LiteRT）（第三梯队）(2026-11-04)
+- 新增 `MLInpainter.kt`：接入 **LaMa-Dilated** 的 TensorFlow Lite 权重（`app/src/main/assets/lama_dilated.tflite`），
+  在端侧完成高质量修复。支持动态读取模型输入尺寸（通常 512×512），自动兼容 NHWC/NCHW 布局与「单输入 4 通道拼接」变体；
+  源图先缩放至模型输入尺寸再推理、结果放大回原尺寸。
+- `app/build.gradle`：新增 `org.tensorflow:tensorflow-lite:2.16.1` 依赖；`aaptOptions.noCompress "tflite"` 保证模型以未压缩方式打包可被 mmap。
+- `MainActivity.runProcess`：一键修复优先尝试 `MLInpainter.inpaint(...)`，返回 null（权重缺失/推理异常）时自动回退经典 Telea `Inpainter`，功能始终可用。
+- 权重文件（约 174 MB，Apache-2.0）**默认不入库**：本地放好即在本机构建中生效；要纳入 CI/AIPS 发布的 APK 需自行 `git add` 提交（或改 LFS）。获取命令与 I/O 约定见 `app/src/main/assets/README.md`。
+- 说明：本沙箱网络对大体积二进制下载不稳定，权重需在你的机器上按 README 一行命令获取；代码已就绪，放好即激活。
+
 ## 强化自动遮挡检测（第二梯队）(2026-11-04)
 - `OverlayDetector.kt` 在纯 Kotlin、零依赖前提下升级为多特征启发式：
   - **新增局部对比度异常种子**：对图像做 7×7 盒式模糊（积分图 O(n)），用 `|gray - blur|` 捕捉半透明 / 柔边叠加物（原仅靠 Sobel 强边缘，会漏掉柔边水印）；候选前景 = 强边缘 ∪ 局部对比度异常。

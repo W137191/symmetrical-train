@@ -7,20 +7,25 @@
 - **选图**：从系统相册选择，或直接拍照（Android 10+ 通过 MediaStore，无需存储权限）。
 - **自动检测遮挡区域**：启发式识别疑似叠加物（边缘密度 + 连通域形状/饱和度筛选）。
 - **手动笔刷**：手指涂抹选择遮挡区域；支持笔刷大小调节、橡皮擦除、蒙版显隐。
-- **一键修复**：基于快速行进法（Telea / Fast Marching Method）的内容感知修复。
+- **一键修复**：默认基于快速行进法（Telea / Fast Marching Method）的内容感知修复；
+  放入端侧 ML 模型权重后自动切换为 **LaMa-Dilated（LiteRT / TFLite）** 高质量修复，缺失模型则回退经典算法。
 - **实时预览**：编辑视图中图像与掩码共用同一变换，所见即所得。
 - **修复前后对比滑块**：「对比」模式下拖动分割线，左侧显示原图、右侧显示修复结果，直观查看差异。
 - **撤销**：支持逐步撤销修复、笔刷/橡皮涂抹与自动检测选区（最多 8 步，内存安全回收）。
 - **保存**：结果以 PNG 保存到相册 `Pictures/PsApk`。
 
 ## 技术要点
-- 纯 Kotlin 实现，**无任何原生库 / 第三方 AI 依赖**，开箱即可编译运行。
+- 以纯 Kotlin 为主实现，核心修复/检测算法零依赖、开箱即可编译运行；
+  仅在 `assets` 中放置 LaMa-Dilated 权重时通过 TensorFlow Lite 启用端侧 ML（缺失则自动回退，不影响构建与基本功能）。
 - 修复算法 `Inpainter.kt`：FMM 距离变换得到像素到达时间 T，按 T 升序用
   `权重 = 等值线方向项 × 距离项 × 时间项` 对已知邻居加权平均，
   使修复区域在色彩、纹理、光照上与周边自然融合（对应 OpenCV 的 `INPAINT_TELEA`）。
 - 自动检测 `OverlayDetector.kt`：Sobel 边缘 ∪ 局部对比度异常（7×7 盒式模糊差分，捕捉半透明/柔边叠加）
   → 8 邻接连通域 → 多特征置信度评分（内部颜色平整度 + 边缘密度 + 紧凑度 + 饱和度 + 面积门限），
   可调 `sensitivity`(0 严格 / 1 宽松，默认 0.5)；保留区域做 1px 膨胀覆盖抗锯齿残留。
+- 端侧 ML 修复 `MLInpainter.kt`：接入 **LaMa-Dilated** 的 TensorFlow Lite 权重（`app/src/main/assets/lama_dilated.tflite`），
+  在端侧完成高质量修复；`MainActivity` 一键修复时优先尝试 ML，失败/缺模型自动回退 `Inpainter`（Telea）。
+  详见 `app/src/main/assets/README.md` 的权重获取与 I/O 约定（约 174 MB，会显著增大 APK，默认不入库）。
 
 ## 构建与运行
 1. 用 **Android Studio (Hedgehog 或更新)** 打开本目录（`File → Open` 选择 `D:/1/PsApk`）。
