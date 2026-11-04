@@ -10,6 +10,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.hypot
+import kotlin.math.maxOf
+import kotlin.math.minOf
 
 /**
  * 自定义编辑视图：

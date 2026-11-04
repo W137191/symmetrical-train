@@ -12,6 +12,8 @@ import android.view.View
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
+import kotlin.math.atan2
+import kotlin.math.minOf
 
 /**
  * 虚拟试穿预览视图：把“服饰裁切图”通过可变形网格（mesh warp）贴合到“人物照片”上。

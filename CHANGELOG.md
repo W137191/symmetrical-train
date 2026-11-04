@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.1 (2026-11-04) — 构建修复
+- 修复会导致 GitHub Actions / 本地编译失败的隐患：补全省略的 `kotlin.math` 显式导入。
+- `CostumeView.kt`、`EditView.kt`、`ImageUtils.kt`、`MainActivity.kt`、`TryOnView.kt` 中 `minOf` / `maxOf` / `atan2` 此前未导入（Kotlin 不会自动导入 `kotlin.math` 顶层函数），现全部补全，确保 `assembleRelease` 通过。
+
 ## v1.3.0 (2026-11-04)
 - 新增「虚拟试穿」功能：用户分别提供服饰照片 + 人物照片，将指定服饰贴合到人物身上。
 - 新增 `TryOnActivity` / `TryOnView`：两图输入、手动涂抹抠图（透明底 PNG 直用）、按类型自动初始化贴合区域。

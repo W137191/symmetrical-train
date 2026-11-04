@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.atan2
 import kotlin.math.hypot
+import kotlin.math.minOf
 
 /**
  * 换装预览视图：在人物照片上叠加服装道具，支持：

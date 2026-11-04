@@ -12,6 +12,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.maxOf
 
 /**
  * 图片工具：从 Uri 解码并降采样、保存到相册、创建相机输出 Uri。
