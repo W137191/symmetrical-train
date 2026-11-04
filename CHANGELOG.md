@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 应用显示名改为 AIPS (2026-11-04)
+- `res/values/strings.xml`：`app_name` 由 “AI 修图 · PS痕迹去除” 改为 **AIPS**，与 Release 标签统一（`android:label="@string/app_name"` 作用于应用名与各桌面图标/设置页显示）。活动标签（换装相机/虚拟试穿）保持不变。
+
 ## 修复 Kotlin 编译错误（续）(2026-11-04)
 - 上一轮把 `maxOf/minOf` 换成根包 `max/min` 引发 **重载歧义**（`kotlin.max` 与 `kotlin.math.max` 同时存在）。改为显式 `import kotlin.math.max` / `import kotlin.math.min`（与 OverlayDetector 一致，确认可解析），消除 `Overload resolution ambiguity` 与 `receiver type mismatch`。
 - `FaceUtils.detectFace`：`face.eyesDistance` 须按方法调用 `face.eyesDistance()`（编译器要求），否则报 “Function invocation 'eyesDistance()' expected”。
