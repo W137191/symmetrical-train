@@ -1,0 +1,11 @@
+# 统一换行与二进制处理，确保 Gradle Wrapper 在不同平台克隆后可用
+* text=auto
+
+# Unix 启动脚本保持 LF，避免 shebang 行被 CRLF 破坏
+gradlew text eol=lf
+
+# Windows 批处理保持 CRLF
+*.bat text eol=crlf
+
+# 包装 jar 必须作为二进制，禁止换行转换
+gradle-wrapper.jar binary
