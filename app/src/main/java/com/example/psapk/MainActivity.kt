@@ -1,6 +1,7 @@
 package com.example.psapk
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnGallery.setOnClickListener { pickImage.launch("image/*") }
+        binding.btnCostume.setOnClickListener { startActivity(Intent(this, CostumeActivity::class.java)) }
         binding.btnCamera.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 launchCamera()

@@ -24,6 +24,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".CostumeActivity"
+            android:exported="false"
+            android:label="换装相机"
+            android:screenOrientation="unspecified" />
+
     </application>
 
 </manifest>

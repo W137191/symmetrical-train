@@ -44,6 +44,21 @@
 复杂或低对比场景请以手动笔刷为准。后续可接入端侧分割模型（如 MobileSAM / 自训练
 遮挡检测网络）进一步提升自动检测精度——接口已预留（替换 `OverlayDetector` 即可）。
 
+## 换装相机（附加功能）
+从主界面点「📸 换装相机」进入，类似哆啦A梦“换装相机”：上传/拍摄人物照片 → 输入期望穿戴的
+服装或角色描述（或点下方道具标签）→ 系统自动把服装道具贴合到人物相应位置 → 手动微调 → 保存。
+
+- **输入**：人物照片（相册/拍照）、文字描述或道具点选。
+- **合成**：`FaceUtils` 用 Android 自带 `FaceDetector` 定位人脸，按道具锚点（头顶/面部/脖颈/上身）
+  自动缩放并放置；支持单指拖动、双指缩放 + 旋转、滑块微调，确保贴合轮廓、自然协调。
+- **输出**：`CostumeView.composeToBitmap()` 合成后保存到相册 `Pictures/PsApk`。
+- **扩展**：内置 7 种矢量绘制的道具（眼镜/派对帽/皇冠/超级英雄披风/面具/领结/哆啦A梦项铃）。
+  描述→道具走 `KeywordCostumeGenerator`（关键词匹配）。要升级成“按文字真正生成任意服装”，
+  只需实现 `CostumeGenerator` 接口（例如接入云端生图 API 或端侧扩散模型），界面无需改动。
+
+> 说明：纯离线、无生成式模型的前提下，无法凭任意文字“生成”真实衣物纹理；当前为
+> “虚拟换装贴片”方案。若需真正生成，请在 `CostumeGenerator` 处接入模型/API（需网络权限）。
+
 ## 目录结构
 ```
 PsApk/
@@ -52,12 +67,18 @@ PsApk/
 │   └── src/main/
 │       ├── AndroidManifest.xml
 │       ├── java/com/example/psapk/
-│       │   ├── MainActivity.kt      # UI 与流程
-│       │   ├── EditView.kt          # 选图/笔刷/蒙版视图
+│       │   ├── MainActivity.kt      # 主页（修图 + 进入换装）
+│       │   ├── EditView.kt          # 选图/笔刷/蒙版/对比/撤销视图
 │       │   ├── Inpainter.kt         # Telea 快速行进法修复
 │       │   ├── OverlayDetector.kt    # 自动遮挡检测（启发式）
-│       │   └── ImageUtils.kt        # 解码/保存/相机 Uri
+│       │   ├── ImageUtils.kt        # 解码/保存/相机 Uri
+│       │   ├── CostumeActivity.kt    # 换装相机界面
+│       │   ├── CostumeView.kt       # 人物+道具合成与手势微调视图
+│       │   ├── Costume.kt           # 服装道具库（矢量绘制 + 关键词）
+│       │   ├── CostumeGenerator.kt  # 可插拔的生成器接口
+│       │   └── FaceUtils.kt         # 人脸检测（自动贴合）
 │       ├── res/layout/activity_main.xml
+│       ├── res/layout/activity_costume.xml
 │       └── res/...
 ├── settings.gradle / build.gradle / gradle.properties
 ├── CHANGELOG.md
