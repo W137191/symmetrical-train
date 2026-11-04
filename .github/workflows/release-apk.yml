@@ -35,13 +35,11 @@ jobs:
       - name: Setup Android SDK (manual)
         run: |
           export ANDROID_HOME="$HOME/android-sdk"
-          export ANDROID_SDK_ROOT="$ANDROID_HOME"   # 必须与 ANDROID_HOME 一致，否则 AGP 报“SDK 路径冲突”
           mkdir -p "$ANDROID_HOME/cmdline-tools"
           curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline.zip
           unzip -q /tmp/cmdline.zip -d "$ANDROID_HOME/cmdline-tools"
           mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
           echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
@@ -49,6 +47,7 @@ jobs:
       # 用仓库自带的 Gradle Wrapper 构建（自带 Gradle 8.4，不依赖 gradle 是否在 PATH）
       - name: Build debug APK
         run: |
+          unset ANDROID_SDK_ROOT   # 移除 runner 镜像自带的环境变量，避免与 ANDROID_HOME 指向不同路径导致 AGP 报 SDK 冲突
           set -o pipefail
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
