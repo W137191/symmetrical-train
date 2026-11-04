@@ -22,7 +22,7 @@
   按「面积适中 + 填充率高 + 饱和度较高」筛选块状叠加物。
 
 ## 构建与运行
-1. 用 **Android Studio (Hedgehog 或更新)** 打开本目录（`File → Open` 选择 `D:/PsApk`）。
+1. 用 **Android Studio (Hedgehog 或更新)** 打开本目录（`File → Open` 选择 `D:/1/PsApk`）。
 2. 等待 Gradle 同步（会自动下载 AGP 8.1.4 / Kotlin 1.9.22 / Gradle 8.4）。
 3. 连接 Android 设备或启动模拟器（建议 API 26+，相机功能建议真机）。
 4. 点击 **Run**（▶）安装并运行。
@@ -35,12 +35,13 @@
 不想装 Android Studio？推送代码到仓库后，GitHub Actions 会自动编译 **debug APK**（无需签名密钥）：
 1. 把 `psapk` 分支推送到远程：`git push -u origin psapk`。
 2. 打开仓库的 **Actions** 页面，等待 `Build debug APK` 任务跑完（通常几分钟）。
-3. 到 **Releases** 页，下载 **Latest** 版本中的 `app-debug.apk`。
+3. 到 **Releases** 页，下载标签为 **`psapk-latest`** 的发布中的 `app-debug.apk`（不要选监测工具的 `apk-latest`）。
 
-- 稳定下载地址（始终指向最新构建，可直接分享/收藏）：
-  `https://github.com/W137191/symmetrical-train/releases/latest/download/app-debug.apk`
-- Release 标记为 **非预发布（Latest）**，标签固定为 `latest`，每次构建滚动覆盖更新。
-- debug 包由 Android 自动用 debug 密钥签名，**无需任何密钥配置**，安装零门槛（与仓库内监测工具 `apk-latest` 的模式一致）。
+- 稳定下载地址（始终指向修图 APK 的最新构建，可直接分享/收藏）：
+  `https://github.com/W137191/symmetrical-train/releases/download/psapk-latest/app-debug.apk`
+- Release 标签固定为 **`psapk-latest`**（非预发布），每次构建滚动覆盖更新；**不抢占**监测工具 `apk-latest` 的 Latest 徽章。
+- debug 包由 Android 自动用 debug 密钥签名，**无需任何密钥配置**，安装零门槛（与监测工具 `apk-latest` 的构建模式一致，但文件名/标签都已区分）。
+- 国内打不开 GitHub 时，给下载地址加镜像前缀：`https://ghproxy.net/https://github.com/W137191/symmetrical-train/releases/download/psapk-latest/app-debug.apk`
 
 ## 使用建议
 1. 点「相册」或「拍照」载入照片。

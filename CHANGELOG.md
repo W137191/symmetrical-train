@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## CI 标签改名（避免下错 APK）(2026-11-04)
+- `release-apk.yml`：`tag_name` 由 `latest` 改为 **`psapk-latest`**，与仓库内监测工具（标签 `apk-latest`）明确区分，避免用户把两者 `app-debug.apk` 搞混。
+- `make_latest` 由 `true` 改为 **`false`**：修图 APK 不再抢占监测工具的 Latest 徽章，两个项目各自独立。
+- 下载地址改用显式标签 URL：
+  `https://github.com/W137191/symmetrical-train/releases/download/psapk-latest/app-debug.apk`
+  （不再用 `/latest/download/...`，彻底消除「Latest 指向哪个项目」的歧义）。
+- README 同步更新下载说明，并补充国内 ghproxy.net 镜像前缀。
+
 ## CI 发布调整（改 debug APK）(2026-11-04)
 - `release-apk.yml`：构建目标由 `assembleRelease`（签名 Release）改为 **`assembleDebug`（debug APK）**，产物 `app-debug.apk`，由 Android 自动 debug 签名，无需任何签名密钥，安装零门槛；与仓库内监测工具（`apk-latest`）的「自动构建 debug APK」模式一致。移除 signing keystore 准备步骤，`on.push.branches` 精简为仅 `psapk`（避免误触发仓库主分支的监测项目）。`tag_name: latest` / `make_latest: true` / 非预发布保持不变。
 
