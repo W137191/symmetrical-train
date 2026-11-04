@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="描述想穿的服装/角色，如：超级英雄披风、公主皇冠、哆啦A梦"
-            android:hintTextColor="#888888"
+            android:textColorHint="#888888"
             android:textColor="#FFFFFF"
             android:inputType="text"
             android:minHeight="48dp" />

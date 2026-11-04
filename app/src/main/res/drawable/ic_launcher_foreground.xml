@@ -7,9 +7,8 @@
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M54,26 L60,48 L82,54 L60,60 L54,82 L48,60 L26,54 L48,48 Z" />
-    <circle
+    <!-- Android VectorDrawable 不支持 <circle>，用 path 的圆弧画一个圆 -->
+    <path
         android:fillColor="#4FC3F7"
-        android:cx="54"
-        android:cy="54"
-        android:r="7" />
+        android:pathData="M47,54 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
 </vector>

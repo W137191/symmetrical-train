@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 修复构建期资源错误（让 AIPS 出包）(2026-11-04)
+- `res/drawable/ic_launcher_foreground.xml`：原文件误用了 `<circle android:cx/cy/r>` 元素，而 Android VectorDrawable 只支持 `<path>/<group>/<clip-path>`，导致 AAPT2 报 `attribute android:cx not found` 等。改为用 `<path>` 的圆弧（`a7,7 0 1,0 ...`）绘制同款蓝色圆点。
+- `res/layout/activity_costume.xml`：EditText 误用 `android:hintTextColor`（框架无此属性），改为正确的 `android:textColorHint`，消除 `attribute android:hintTextColor not found`。
+- 两项均为 CI 自动构建 `assembleDebug` 时的资源链接失败根因，修复后 AIPS 标签应能产出 `app-debug.apk`。
+
 ## CI 标签再改名 AIPS (2026-11-04)
 - `release-apk.yml`：发布标签 `tag_name` 由 `psapk-latest` 改为 **`AIPS`**，发布标题同步为 “AIPS 最新构建”；保持 `make_latest: false`，不与监测工具 `apk-latest` 抢 Latest 徽章。
 - 下载地址改为显式标签 URL：
