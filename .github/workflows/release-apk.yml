@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
@@ -41,16 +42,12 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.4'
-
-      # 关键：开启 pipefail 暴露真实退出码；tee 出 build.log 供失败诊断
+      # 用仓库自带的 Gradle Wrapper 构建（自带 Gradle 8.4，不依赖 gradle 是否在 PATH）
       - name: Build debug APK
         run: |
           set -o pipefail
-          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: Upload to GitHub Release
         if: success()
@@ -94,7 +91,7 @@ jobs:
               else: raise
           PY
 
-      # 保险：构建失败把错误日志写到公开 Release（公开页面可被 WebFetch 读到，便于远程诊断）
+      # 保险：构建失败把诊断 + 错误日志写到公开 Release（公开页面可被 WebFetch 读到，便于远程诊断）
       - name: 公开错误日志(Release)
         if: failure()
         continue-on-error: true
@@ -103,30 +100,38 @@ jobs:
           TAG: ci-build-log
         run: |
           python3 - <<'PY'
-          import os, json, urllib.request, urllib.error, re
+          import os, json, urllib.request, urllib.error, re, subprocess
           repo = os.environ['GITHUB_REPOSITORY']
           token = os.environ['GH_TOKEN']
           tag = os.environ['TAG']
           base = f"https://api.github.com/repos/{repo}"
           hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
-          src = "build.log"
+          diag = []
+          diag.append("PWD=" + os.getcwd())
+          diag.append("build.log exists: " + str(os.path.exists("build.log")))
+          if os.path.exists("build.log"):
+              diag.append("build.log size: " + str(os.path.getsize("build.log")))
+          diag.append("gradlew exists: " + str(os.path.exists("gradlew")))
           try:
-              with open(src, "r", encoding="utf-8", errors="replace") as f:
+              diag.append("which gradle: " + subprocess.check_output(["bash","-c","command -v gradle || echo NONE"]).decode().strip())
+          except Exception as e:
+              diag.append("which gradle err: " + str(e))
+          try:
+              with open("build.log","r",encoding="utf-8",errors="replace") as f:
                   log = f.read()
-          except Exception:
-              log = "(build.log 未生成——可能在配置/依赖解析阶段即失败)"
-          clean = re.sub(r"\x1b\[[0-9;]*m", "", log)
+          except Exception as e:
+              log = "(build.log 未生成: %s)" % e
+          clean = re.sub(r"\x1b\[[0-9;]*m","",log)
           lines = clean.splitlines()
-          end_idx = next((i for i, l in enumerate(lines)
-                          if "Execution failed for task" in l and "compileDebugKotlin" in l), None)
+          end_idx = next((i for i,l in enumerate(lines) if "compileDebugKotlin" in l and "Execution failed" in l), None)
           if end_idx is None:
-              end_idx = next((i for i, l in enumerate(lines) if "BUILD FAILED" in l), len(lines))
-          start_idx = max(0, end_idx - 80)
-          seg = "\n".join(lines[start_idx:end_idx + 4])
+              end_idx = next((i for i,l in enumerate(lines) if "BUILD FAILED" in l), len(lines))
+          start_idx = max(0, end_idx-80)
+          seg = "\n".join(lines[start_idx:end_idx+4])
           if len(seg) > 12000:
               seg = "...(前面已省略)...\n" + seg[-12000:]
           body = json.dumps({"tag_name": tag, "name": "CI 构建错误日志(最新)",
-                             "body": "```\n" + seg + "\n```"}).encode()
+                             "body": "```\n" + "\n".join(diag) + "\n\n--- build.log 尾部 ---\n" + seg + "\n```"}).encode()
           try:
               req = urllib.request.Request(f"{base}/releases/tags/{tag}", headers=hdr)
               rel = json.load(urllib.request.urlopen(req))
