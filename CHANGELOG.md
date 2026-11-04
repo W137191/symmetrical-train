@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 修复 Kotlin 编译错误（让 AIPS 出包）(2026-11-04)
+- 本构建 `assembleDebug` 在资源链接通过后卡在 `compileDebugKotlin`，共 16 处 `e:` 错误，根因分三类：
+  - **缺导入**：`MainActivity`/`CostumeActivity`/`TryOnActivity` 用了 `withContext` 却只导入了 `Dispatchers`/`launch`；`EditView` 用了 `PorterDuffXfermode` 却只导入了 `PorterDuff`。已补 `import kotlinx.coroutines.withContext` 与 `import android.graphics.PorterDuffXfermode`。
+  - **`FaceDetector.Face()` 不能直接构造**：`FaceUtils.detectFace` 原 `arrayOf(FaceDetector.Face())` 触发“inner class 需外部类接收者”错误，改为 `arrayOfNulls<FaceDetector.Face>(1)` 并 `faces[0]!!`。
+  - **`maxOf`/`minOf` 在构建环境的 kotlin-stdlib 中不可解析**（同包 `cos/sin/hypot/atan2/max/min` 均可解析，唯独 `Of` 变体不行）。将所有 `maxOf(`→`max(`、`minOf(`→`min(`（改用根包 `kotlin.max`/`kotlin.min`，自动导入），并移除失效的 `kotlin.math.maxOf`/`minOf` 导入。
+- 同时升级 CI 失败诊断：除 build.log 尾部外，额外抓取 `e:` 编译错误行与失败任务名，便于远程定位。
+
 ## 修复构建期资源错误（让 AIPS 出包）(2026-11-04)
 - `res/drawable/ic_launcher_foreground.xml`：原文件误用了 `<circle android:cx/cy/r>` 元素，而 Android VectorDrawable 只支持 `<path>/<group>/<clip-path>`，导致 AAPT2 报 `attribute android:cx not found` 等。改为用 `<path>` 的圆弧（`a7,7 0 1,0 ...`）绘制同款蓝色圆点。
 - `res/layout/activity_costume.xml`：EditText 误用 `android:hintTextColor`（框架无此属性），改为正确的 `android:textColorHint`，消除 `attribute android:hintTextColor not found`。

@@ -13,10 +13,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import kotlin.math.maxOf
 import com.example.psapk.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             toast("笔刷 ${binding.editView.brushSize.toInt()}")
         }
         binding.btnBrushMinus.setOnClickListener {
-            binding.editView.brushSize = maxOf(10f, binding.editView.brushSize - 20f)
+            binding.editView.brushSize = max(10f, binding.editView.brushSize - 20f)
             toast("笔刷 ${binding.editView.brushSize.toInt()}")
         }
         binding.btnErase.setOnClickListener {

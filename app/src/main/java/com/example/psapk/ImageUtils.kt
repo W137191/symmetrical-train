@@ -12,7 +12,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.maxOf
 
 /**
  * 图片工具：从 Uri 解码并降采样、保存到相册、创建相机输出 Uri。
@@ -39,8 +38,8 @@ object ImageUtils {
             BitmapFactory.decodeStream(it, null, opts)
         } ?: throw IllegalArgumentException("无法解码图片: $uri")
 
-        return if (maxOf(bmp.width, bmp.height) > maxDim) {
-            val s = maxDim.toFloat() / maxOf(bmp.width, bmp.height)
+        return if (max(bmp.width, bmp.height) > maxDim) {
+            val s = maxDim.toFloat() / max(bmp.width, bmp.height)
             val scaled = Bitmap.createScaledBitmap(
                 bmp, (bmp.width * s).toInt(), (bmp.height * s).toInt(), true
             )

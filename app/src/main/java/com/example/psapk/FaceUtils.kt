@@ -29,11 +29,11 @@ object FaceUtils {
 
         return try {
             val fd = FaceDetector(ew, eh, 1)
-            val faces = arrayOf(FaceDetector.Face())
+            val faces = arrayOfNulls<FaceDetector.Face>(1)
             val n = fd.findFaces(gray, faces)
             gray.recycle()
             if (n > 0) {
-                val face = faces[0]
+                val face = faces[0]!!
                 val mid = PointF()
                 face.getMidPoint(mid)
                 val eyes = if (face.eyesDistance > 0f) face.eyesDistance else (ew * 0.25f)

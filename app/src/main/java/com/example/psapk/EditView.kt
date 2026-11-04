@@ -6,12 +6,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.hypot
-import kotlin.math.maxOf
-import kotlin.math.minOf
 
 /**
  * 自定义编辑视图：
@@ -156,7 +155,7 @@ class EditView @JvmOverloads constructor(
         val vw = width.toFloat()
         val vh = height.toFloat()
         if (vw <= 0 || vh <= 0) return
-        scale = minOf(vw / b.width, vh / b.height)
+        scale = min(vw / b.width, vh / b.height)
         offsetX = (vw - b.width * scale) / 2f
         offsetY = (vh - b.height * scale) / 2f
     }
@@ -242,7 +241,7 @@ class EditView @JvmOverloads constructor(
 
     private fun stampLine(x0: Float, y0: Float, x1: Float, y1: Float) {
         val dist = hypot(x1 - x0, y1 - y0)
-        val steps = maxOf(1, (dist / (brushSize / 4f)).toInt())
+        val steps = max(1, (dist / (brushSize / 4f)).toInt())
         for (s in 0..steps) {
             val t = s.toFloat() / steps
             stamp(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)

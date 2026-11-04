@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.atan2
 import kotlin.math.hypot
-import kotlin.math.minOf
 
 /**
  * 换装预览视图：在人物照片上叠加服装道具，支持：
@@ -90,7 +89,7 @@ class CostumeView @JvmOverloads constructor(
         val p = person ?: return
         val vw = width.toFloat(); val vh = height.toFloat()
         if (vw <= 0 || vh <= 0) return
-        fitScale = minOf(vw / p.width, vh / p.height)
+        fitScale = min(vw / p.width, vh / p.height)
         fitX = (vw - p.width * fitScale) / 2f
         fitY = (vh - p.height * fitScale) / 2f
     }

@@ -13,7 +13,6 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.math.atan2
-import kotlin.math.minOf
 
 /**
  * 虚拟试穿预览视图：把“服饰裁切图”通过可变形网格（mesh warp）贴合到“人物照片”上。
@@ -142,7 +141,7 @@ class TryOnView @JvmOverloads constructor(
         val p = person ?: return
         val vw = width.toFloat(); val vh = height.toFloat()
         if (vw <= 0 || vh <= 0) return
-        fitScale = minOf(vw / p.width, vh / p.height)
+        fitScale = min(vw / p.width, vh / p.height)
         fitX = (vw - p.width * fitScale) / 2f
         fitY = (vh - p.height * fitScale) / 2f
     }
@@ -281,7 +280,7 @@ class TryOnView @JvmOverloads constructor(
 
     private fun nearestPoint(x: Float, y: Float): Pair<Int, Int> {
         val bx = (x - fitX) / fitScale; val by = (y - fitY) / fitScale
-        val thr = minOf(person!!.width, person!!.height) * 0.05f
+        val thr = min(person!!.width, person!!.height) * 0.05f
         var best = -1 to -1; var bestD = thr
         for (i in 0..GRID) for (j in 0..GRID) {
             val d = hypot(pts[i][j].x - bx, pts[i][j].y - by)
