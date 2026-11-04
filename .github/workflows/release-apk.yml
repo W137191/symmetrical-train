@@ -120,13 +120,20 @@ jobs:
               log = "(build.log 未生成: %s)" % e
           clean = re.sub(r"\x1b\[[0-9;]*m","",log)
           lines = clean.splitlines()
+          # Kotlin 编译错误：以 "e: " 开头的行（去掉 ANSI 后）
+          kerrs = [l for l in lines if l.strip().startswith("e: ")]
+          # 任务失败行（如 > Task :app:compileDebugKotlin FAILED）
+          failed_tasks = [l.strip() for l in lines if "FAILED" in l and l.strip().startswith("> Task")]
           end_idx = next((i for i,l in enumerate(lines) if "BUILD FAILED" in l), None)
           if end_idx is None:
               seg = "\n".join(lines[-200:])
           else:
-              seg = "\n".join(lines[max(0,end_idx-100):end_idx+6])
+              seg = "\n".join(lines[max(0,end_idx-120):end_idx+6])
           body = json.dumps({"title":"CI 构建失败日志 (自动)","body":
-                             "## 诊断\n```\n" + "\n".join(diag) + "\n```\n\n## build.log 尾部\n```\n" + seg + "\n```",
+                             "## 诊断\n```\n" + "\n".join(diag) + "\n```\n\n"
+                             "## 失败任务\n```\n" + "\n".join(failed_tasks[:40]) + "\n```\n\n"
+                             "## Kotlin 编译错误 (" + str(len(kerrs)) + ")\n```\n" + "\n".join(kerrs[:200]) + "\n```\n\n"
+                             "## build.log 尾部\n```\n" + seg + "\n```",
                              "labels":[label]}).encode()
           try:
               req = urllib.request.Request(f"{base}/issues?labels={label}&state=open", headers=hdr)
