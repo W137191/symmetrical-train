@@ -22,6 +22,12 @@
         android:layout_height="wrap_content"
         android:text="📸 换装相机（新功能）" />
 
+    <Button
+        android:id="@+id/btnTryOn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="👕 虚拟试穿（新功能）" />
+
     <com.example.psapk.EditView
         android:id="@+id/editView"
         android:layout_width="match_parent"

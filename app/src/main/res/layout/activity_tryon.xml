@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0E1424"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="← 返回" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="虚拟试穿"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.example.psapk.TryOnView
+            android:id="@+id/tryOnView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <com.example.psapk.EditView
+            android:id="@+id/cutoutView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="① 选人物 → ② 选服饰并涂抹出服饰区域 → ③ 确认裁切后拖动网格点贴合"
+        android:textColor="#BBBBBB"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:padding="4dp" />
+
+    <!-- 服饰类型 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/btnTypeTop" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="上衣" />
+        <Button android:id="@+id/btnTypePants" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="裤子" />
+        <Button android:id="@+id/btnTypeSkirt" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="裙子" />
+        <Button android:id="@+id/btnTypeOther" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="其他" />
+    </LinearLayout>
+
+    <!-- 微调 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/btnReset" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="重置" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="缩放" android:textColor="#CCCCCC" android:textSize="12sp" />
+        <SeekBar android:id="@+id/seekScale" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="300" android:progress="100" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="旋转" android:textColor="#CCCCCC" android:textSize="12sp" />
+        <SeekBar android:id="@+id/seekRotate" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="360" android:progress="180" />
+    </LinearLayout>
+
+    <!-- 步骤 / 动作 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/btnPerson" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="选人物" />
+        <Button android:id="@+id/btnGarment" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="选服饰" />
+        <Button android:id="@+id/btnConfirmCutout" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="确认裁切" />
+        <Button android:id="@+id/btnSave" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="保存" />
+    </LinearLayout>
+
+</LinearLayout>

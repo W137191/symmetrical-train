@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnGallery.setOnClickListener { pickImage.launch("image/*") }
         binding.btnCostume.setOnClickListener { startActivity(Intent(this, CostumeActivity::class.java)) }
+        binding.btnTryOn.setOnClickListener { startActivity(Intent(this, TryOnActivity::class.java)) }
         binding.btnCamera.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 launchCamera()
