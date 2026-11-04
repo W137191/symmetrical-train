@@ -1,12 +1,12 @@
-name: Release APK
+name: Build debug APK
 
-# 路径 B：推送到 GitHub 后自动编译并签名 Release APK，发布到 GitHub Release。
-# 默认用 CI 临时生成的签名密钥（零配置即可安装）；
-# 想用自己的密钥，在仓库 Settings → Secrets 添加：KEYSTORE_BASE64 / KEY_ALIAS / KEY_PASSWORD / KEYSTORE_PASSWORD。
+# 路径 B：推送到 GitHub 后自动编译 debug APK，发布到 GitHub Release（tag: latest）。
+# debug 包由 Android 自动用 debug 密钥签名，无需任何密钥配置，安装零门槛；
+# 与仓库内监测工具（apk-latest）保持一致的「自动构建 debug APK」模式。
 
 on:
   push:
-    branches: [main, master, psapk]
+    branches: [psapk]
   workflow_dispatch: {}
 
 permissions:
@@ -31,31 +31,11 @@ jobs:
       - name: Accept SDK licenses
         run: yes | sdkmanager --licenses || true
 
-      - name: Prepare signing keystore
-        env:
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'psapk' }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'android' }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'android' }}
-        run: |
-          mkdir -p "${{ github.workspace }}/sign"
-          KS="${{ github.workspace }}/sign/release.keystore"
-          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$KS"
-          else
-            keytool -genkeypair -v -keystore "$KS" -keyalg RSA -keysize 2048 -validity 10000 \
-              -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
-              -dname "CN=PsApk, OU=Dev, O=PsApk, C=CN"
-          fi
-          echo "KEYSTORE_FILE=$KS" >> "$GITHUB_ENV"
-          echo "KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
-          echo "KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
-          echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
-
-      - name: Build release APK
+      - name: Build debug APK
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.4
-          arguments: assembleRelease
+          arguments: assembleDebug
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
@@ -66,8 +46,8 @@ jobs:
           prerelease: false
           make_latest: true
           body: |
-            自动构建（GitHub Actions）· 签名 Release。
+            自动构建（GitHub Actions）· debug APK（Android 自动 debug 签名，无需密钥）。
             提交：${{ github.sha }}
             构建号：#${{ github.run_number }}
             安装：下载后允许“未知来源”安装即可。
-          files: app/build/outputs/apk/release/app-release.apk
+          files: app/build/outputs/apk/debug/app-debug.apk

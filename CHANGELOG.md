@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## CI 发布调整（改 debug APK）(2026-11-04)
+- `release-apk.yml`：构建目标由 `assembleRelease`（签名 Release）改为 **`assembleDebug`（debug APK）**，产物 `app-debug.apk`，由 Android 自动 debug 签名，无需任何签名密钥，安装零门槛；与仓库内监测工具（`apk-latest`）的「自动构建 debug APK」模式一致。移除 signing keystore 准备步骤，`on.push.branches` 精简为仅 `psapk`（避免误触发仓库主分支的监测项目）。`tag_name: latest` / `make_latest: true` / 非预发布保持不变。
+
 ## 构建（gradlew 包装）(2026-11-04)
 - 补齐 Gradle Wrapper：新增官方 `gradlew` / `gradlew.bat` 与二进制 `gradle-wrapper.jar`（取自 Gradle v8.4.0 官方标签），`gradle-wrapper.properties` 已指向 gradle-8.4-bin.zip。
 - 现可 `./gradlew assembleRelease`（Windows `gradlew.bat`）一键本地打包，首次运行自动下载 Gradle 8.4；无需预先安装 Gradle（仍需本机 JDK 17）。
