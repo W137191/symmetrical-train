@@ -1,8 +1,8 @@
 name: Build debug APK
 
-# 路径 B：推送到 GitHub 后自动编译 debug APK，发布到 GitHub Release（tag: psapk-latest）。
+# 路径 B：推送到 GitHub 后自动编译 debug APK，发布到 GitHub Release（tag: AIPS）。
 # debug 包由 Android 自动用 debug 密钥签名，无需任何密钥配置，安装零门槛；
-# 标签用 psapk-latest 与仓库内监测工具（apk-latest）区分，避免用户下错 APK。
+# 标签用 AIPS 与仓库内监测工具（apk-latest）区分，避免用户下错 APK。
 
 on:
   push:
@@ -40,10 +40,10 @@ jobs:
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          # 标签 psapk-latest：与监测工具 apk-latest 区分，避免混淆。
-          # 不抢占 Latest 徽章（make_latest: false），下载请用显式标签地址 /download/psapk-latest/...
-          tag_name: psapk-latest
-          name: "PsApk 最新构建 #${{ github.run_number }}"
+          # 标签 AIPS：与监测工具 apk-latest 区分，避免混淆。
+          # 不抢占 Latest 徽章（make_latest: false），下载请用显式标签地址 /download/AIPS/...
+          tag_name: AIPS
+          name: "AIPS 最新构建 #${{ github.run_number }}"
           prerelease: false
           make_latest: false
           body: |

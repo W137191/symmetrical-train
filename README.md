@@ -35,13 +35,13 @@
 不想装 Android Studio？推送代码到仓库后，GitHub Actions 会自动编译 **debug APK**（无需签名密钥）：
 1. 把 `psapk` 分支推送到远程：`git push -u origin psapk`。
 2. 打开仓库的 **Actions** 页面，等待 `Build debug APK` 任务跑完（通常几分钟）。
-3. 到 **Releases** 页，下载标签为 **`psapk-latest`** 的发布中的 `app-debug.apk`（不要选监测工具的 `apk-latest`）。
+3. 到 **Releases** 页，下载标签为 **`AIPS`** 的发布中的 `app-debug.apk`（不要选监测工具的 `apk-latest`）。
 
 - 稳定下载地址（始终指向修图 APK 的最新构建，可直接分享/收藏）：
-  `https://github.com/W137191/symmetrical-train/releases/download/psapk-latest/app-debug.apk`
-- Release 标签固定为 **`psapk-latest`**（非预发布），每次构建滚动覆盖更新；**不抢占**监测工具 `apk-latest` 的 Latest 徽章。
+  `https://github.com/W137191/symmetrical-train/releases/download/AIPS/app-debug.apk`
+- Release 标签固定为 **`AIPS`**（非预发布），每次构建滚动覆盖更新；**不抢占**监测工具 `apk-latest` 的 Latest 徽章。
 - debug 包由 Android 自动用 debug 密钥签名，**无需任何密钥配置**，安装零门槛（与监测工具 `apk-latest` 的构建模式一致，但文件名/标签都已区分）。
-- 国内打不开 GitHub 时，给下载地址加镜像前缀：`https://ghproxy.net/https://github.com/W137191/symmetrical-train/releases/download/psapk-latest/app-debug.apk`
+- 国内打不开 GitHub 时，给下载地址加镜像前缀：`https://ghproxy.net/https://github.com/W137191/symmetrical-train/releases/download/AIPS/app-debug.apk`
 
 ## 使用建议
 1. 点「相册」或「拍照」载入照片。

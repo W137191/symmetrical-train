@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## CI 标签再改名 AIPS (2026-11-04)
+- `release-apk.yml`：发布标签 `tag_name` 由 `psapk-latest` 改为 **`AIPS`**，发布标题同步为 “AIPS 最新构建”；保持 `make_latest: false`，不与监测工具 `apk-latest` 抢 Latest 徽章。
+- 下载地址改为显式标签 URL：
+  `https://github.com/W137191/symmetrical-train/releases/download/AIPS/app-debug.apk`
+  （国内仍可用 `ghproxy.net/` 镜像前缀）。README 同步更新。
+
 ## CI 标签改名（避免下错 APK）(2026-11-04)
 - `release-apk.yml`：`tag_name` 由 `latest` 改为 **`psapk-latest`**，与仓库内监测工具（标签 `apk-latest`）明确区分，避免用户把两者 `app-debug.apk` 搞混。
 - `make_latest` 由 `true` 改为 **`false`**：修图 APK 不再抢占监测工具的 Latest 徽章，两个项目各自独立。
