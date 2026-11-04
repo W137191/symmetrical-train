@@ -1,6 +1,6 @@
 name: Build debug APK
 
-# 路径 B：推送到 GitHub 后自动编译 debug APK，发布到 GitHub Release（tag: AIPS）。
+# 推送到 GitHub 后自动编译 debug APK，发布到 GitHub Release（tag: AIPS）。
 # debug 包由 Android 自动用 debug 密钥签名，无需任何密钥配置，安装零门槛；
 # 标签用 AIPS 与仓库内监测工具（apk-latest）区分，避免用户下错 APK。
 
@@ -14,30 +14,45 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept SDK licenses
-        run: yes | sdkmanager --licenses || true
+      # 关键：GitHub runner 默认没装 compileSdk 34 平台，必须显式安装，否则 assembleDebug 配置阶段即失败
+      - name: 确认 SDK 并补齐 platform-34 / build-tools
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKM" ]; then SDKM="$(command -v sdkmanager || true)"; fi
+          yes | "$SDKM" --licenses >/dev/null 2>&1 || true
+          "$SDKM" --install "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
 
-      - name: Build debug APK
-        uses: gradle/gradle-build-action@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.4
-          arguments: assembleDebug
+          gradle-version: '8.4'
+
+      # 关键：开启 pipefail 暴露真实退出码；tee 出 build.log 供失败诊断
+      - name: Build debug APK
+        run: |
+          set -o pipefail
+          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: Upload to GitHub Release
+        if: success()
         uses: softprops/action-gh-release@v1
         with:
           # 标签 AIPS：与监测工具 apk-latest 区分，避免混淆。
@@ -52,3 +67,74 @@ jobs:
             构建号：#${{ github.run_number }}
             安装：下载后允许“未知来源”安装即可。
           files: app/build/outputs/apk/debug/app-debug.apk
+
+      # 构建成功时清理调试用的错误日志 Release（仅失败时创建），保持仓库清爽
+      - name: 清理调试Release
+        if: success()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ci-build-log
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error
+          repo = os.environ['GITHUB_REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          tag = os.environ['TAG']
+          base = f"https://api.github.com/repos/{repo}"
+          hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+          try:
+              req = urllib.request.Request(f"{base}/releases/tags/{tag}", headers=hdr)
+              rel = json.load(urllib.request.urlopen(req))
+              urllib.request.urlopen(urllib.request.Request(f"{base}/releases/{rel['id']}", headers=hdr, method="DELETE"))
+              print("CLEANUP_OK")
+          except urllib.error.HTTPError as e:
+              if e.code == 404: print("no debug release to clean")
+              else: raise
+          PY
+
+      # 保险：构建失败把错误日志写到公开 Release（公开页面可被 WebFetch 读到，便于远程诊断）
+      - name: 公开错误日志(Release)
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ci-build-log
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error, re
+          repo = os.environ['GITHUB_REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          tag = os.environ['TAG']
+          base = f"https://api.github.com/repos/{repo}"
+          hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+          src = "build.log"
+          try:
+              with open(src, "r", encoding="utf-8", errors="replace") as f:
+                  log = f.read()
+          except Exception:
+              log = "(build.log 未生成——可能在配置/依赖解析阶段即失败)"
+          clean = re.sub(r"\x1b\[[0-9;]*m", "", log)
+          lines = clean.splitlines()
+          end_idx = next((i for i, l in enumerate(lines)
+                          if "Execution failed for task" in l and "compileDebugKotlin" in l), None)
+          if end_idx is None:
+              end_idx = next((i for i, l in enumerate(lines) if "BUILD FAILED" in l), len(lines))
+          start_idx = max(0, end_idx - 80)
+          seg = "\n".join(lines[start_idx:end_idx + 4])
+          if len(seg) > 12000:
+              seg = "...(前面已省略)...\n" + seg[-12000:]
+          body = json.dumps({"tag_name": tag, "name": "CI 构建错误日志(最新)",
+                             "body": "```\n" + seg + "\n```"}).encode()
+          try:
+              req = urllib.request.Request(f"{base}/releases/tags/{tag}", headers=hdr)
+              rel = json.load(urllib.request.urlopen(req))
+              urllib.request.urlopen(urllib.request.Request(f"{base}/releases/{rel['id']}", headers=hdr, method="DELETE"))
+          except urllib.error.HTTPError as e:
+              if e.code != 404: raise
+          try:
+              urllib.request.urlopen(urllib.request.Request(f"{base}/releases", data=body, headers=hdr, method="POST")).read()
+              print("RELEASE_LOG_OK")
+          except urllib.error.HTTPError as e:
+              print("RELEASE_LOG_FAIL", e.read().decode('utf-8','replace')[:500])
+          PY
