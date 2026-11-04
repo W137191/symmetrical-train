@@ -28,17 +28,18 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      # 关键：GitHub runner 默认没装 compileSdk 34 平台，必须显式安装，否则 assembleDebug 配置阶段即失败
-      - name: 确认 SDK 并补齐 platform-34 / build-tools
+      # 手动安装 Android SDK（绕过在 Node24 下已失效的 android-actions/setup-android@v3）
+      - name: Setup Android SDK (manual)
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -x "$SDKM" ]; then SDKM="$(command -v sdkmanager || true)"; fi
-          yes | "$SDKM" --licenses >/dev/null 2>&1 || true
-          "$SDKM" --install "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
+          export ANDROID_HOME="$HOME/android-sdk"
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline.zip
+          unzip -q /tmp/cmdline.zip -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
