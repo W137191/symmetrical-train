@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 构建（gradlew 包装）(2026-11-04)
+- 补齐 Gradle Wrapper：新增官方 `gradlew` / `gradlew.bat` 与二进制 `gradle-wrapper.jar`（取自 Gradle v8.4.0 官方标签），`gradle-wrapper.properties` 已指向 gradle-8.4-bin.zip。
+- 现可 `./gradlew assembleRelease`（Windows `gradlew.bat`）一键本地打包，首次运行自动下载 Gradle 8.4；无需预先安装 Gradle（仍需本机 JDK 17）。
+
 ## CI 发布调整 (2026-11-04)
 - `.github/workflows/release-apk.yml`：Release 改用稳定标签 `latest` 且 `prerelease: false`（标记为 Latest），每次构建滚动更新，提供固定下载地址 `…/releases/latest/download/app-release.apk`，免去每次构建更换链接。
 

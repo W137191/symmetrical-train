@@ -27,8 +27,9 @@
 3. 连接 Android 设备或启动模拟器（建议 API 26+，相机功能建议真机）。
 4. 点击 **Run**（▶）安装并运行。
 
-> 命令行本地打包：需先安装 Gradle 8.4 并执行 `gradle wrapper` 生成 `gradlew`（当前仓库仅含
-> `gradle-wrapper.properties`，未提交 wrapper jar）；或直接用 Android Studio / 下方 GitHub Actions 出包。
+> 命令行本地打包：仓库已内置 `gradlew` / `gradlew.bat`（含 `gradle-wrapper.jar`），首次运行会自动下载 Gradle 8.4，无需预先安装 Gradle。
+> 前提：本机需安装 **JDK 17** 并配置 `JAVA_HOME`（AGP 8.1.4 要求 JDK 17）。
+> 命令：`gradlew assembleRelease`（Windows 用 `gradlew.bat`）；或直接用 Android Studio / 下方 GitHub Actions 出包。
 
 ## 下载已构建的 APK（GitHub Actions 自动打包）
 不想装 Android Studio？推送代码到仓库后，GitHub Actions 会自动编译并签名 APK：
