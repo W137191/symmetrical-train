@@ -1,5 +1,7 @@
 package com.example.psapk
 
+import kotlin.math.max
+
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap

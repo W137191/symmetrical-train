@@ -36,7 +36,7 @@ object FaceUtils {
                 val face = faces[0]!!
                 val mid = PointF()
                 face.getMidPoint(mid)
-                val eyes = if (face.eyesDistance > 0f) face.eyesDistance else (ew * 0.25f)
+                val eyes = if (face.eyesDistance() > 0f) face.eyesDistance() else (ew * 0.25f)
                 val sx = src.width.toFloat() / ew
                 val sy = src.height.toFloat() / eh
                 val cx = mid.x * sx

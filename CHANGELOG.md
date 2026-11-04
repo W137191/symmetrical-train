@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 修复 Kotlin 编译错误（续）(2026-11-04)
+- 上一轮把 `maxOf/minOf` 换成根包 `max/min` 引发 **重载歧义**（`kotlin.max` 与 `kotlin.math.max` 同时存在）。改为显式 `import kotlin.math.max` / `import kotlin.math.min`（与 OverlayDetector 一致，确认可解析），消除 `Overload resolution ambiguity` 与 `receiver type mismatch`。
+- `FaceUtils.detectFace`：`face.eyesDistance` 须按方法调用 `face.eyesDistance()`（编译器要求），否则报 “Function invocation 'eyesDistance()' expected”。
+- `EditView.setMaskFromBitmap`：原误用 `maskBitmap?.let { c -> c.drawBitmap(...) }`——`maskBitmap` 是 `Bitmap` 而非 `Canvas`，导致 `drawBitmap` 无法解析；改为 `maskCanvas`。
+
 ## 修复 Kotlin 编译错误（让 AIPS 出包）(2026-11-04)
 - 本构建 `assembleDebug` 在资源链接通过后卡在 `compileDebugKotlin`，共 16 处 `e:` 错误，根因分三类：
   - **缺导入**：`MainActivity`/`CostumeActivity`/`TryOnActivity` 用了 `withContext` 却只导入了 `Dispatchers`/`launch`；`EditView` 用了 `PorterDuffXfermode` 却只导入了 `PorterDuff`。已补 `import kotlinx.coroutines.withContext` 与 `import android.graphics.PorterDuffXfermode`。

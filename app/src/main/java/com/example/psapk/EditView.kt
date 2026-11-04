@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.hypot
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 自定义编辑视图：
@@ -103,7 +105,7 @@ class EditView @JvmOverloads constructor(
 
     /** 将检测得到的掩码叠加到当前掩码上。 */
     fun setMaskFromBitmap(mask: Bitmap) {
-        maskBitmap?.let { c ->
+        maskCanvas?.let { c ->
             c.drawBitmap(mask, 0f, 0f, null)
             invalidate()
         }
