@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## CI 发布调整 (2026-11-04)
+- `.github/workflows/release-apk.yml`：Release 改用稳定标签 `latest` 且 `prerelease: false`（标记为 Latest），每次构建滚动更新，提供固定下载地址 `…/releases/latest/download/app-release.apk`，免去每次构建更换链接。
+
 ## v1.3.1 (2026-11-04) — 构建修复
 - 修复会导致 GitHub Actions / 本地编译失败的隐患：补全省略的 `kotlin.math` 显式导入。
 - `CostumeView.kt`、`EditView.kt`、`ImageUtils.kt`、`MainActivity.kt`、`TryOnView.kt` 中 `minOf` / `maxOf` / `atan2` 此前未导入（Kotlin 不会自动导入 `kotlin.math` 顶层函数），现全部补全，确保 `assembleRelease` 通过。

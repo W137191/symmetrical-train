@@ -27,7 +27,20 @@
 3. 连接 Android 设备或启动模拟器（建议 API 26+，相机功能建议真机）。
 4. 点击 **Run**（▶）安装并运行。
 
-> 若命令行打包：`gradlew assembleDebug`（首次会自动补全 Gradle wrapper）。
+> 命令行本地打包：需先安装 Gradle 8.4 并执行 `gradle wrapper` 生成 `gradlew`（当前仓库仅含
+> `gradle-wrapper.properties`，未提交 wrapper jar）；或直接用 Android Studio / 下方 GitHub Actions 出包。
+
+## 下载已构建的 APK（GitHub Actions 自动打包）
+不想装 Android Studio？推送代码到仓库后，GitHub Actions 会自动编译并签名 APK：
+1. 把 `psapk` 分支推送到远程：`git push -u origin psapk`。
+2. 打开仓库的 **Actions** 页面，等待 `Release APK` 任务跑完（通常几分钟）。
+3. 到 **Releases** 页，下载 **Latest** 版本中的 `app-release.apk`。
+
+- 稳定下载地址（始终指向最新构建，可直接分享/收藏）：
+  `https://github.com/W137191/symmetrical-train/releases/latest/download/app-release.apk`
+- Release 标记为 **非预发布（Latest）**，标签固定为 `latest`，每次构建滚动覆盖更新。
+- 默认用 CI 临时签名密钥（store / key 密码均为 `android`）。要用自己的密钥，
+  在仓库 **Settings → Secrets** 添加 `KEYSTORE_BASE64` / `KEY_ALIAS` / `KEY_PASSWORD` / `KEYSTORE_PASSWORD`。
 
 ## 使用建议
 1. 点「相册」或「拍照」载入照片。

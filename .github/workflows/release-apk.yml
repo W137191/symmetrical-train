@@ -60,7 +60,14 @@ jobs:
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.0-build-${{ github.run_number }}
-          name: PsApk Build ${{ github.run_number }}（签名 Release）
-          prerelease: true
+          # 稳定标签 latest：每次构建滚动更新，下载地址固定不变，方便直接取最新包
+          tag_name: latest
+          name: "PsApk 最新构建 #${{ github.run_number }}"
+          prerelease: false
+          make_latest: true
+          body: |
+            自动构建（GitHub Actions）· 签名 Release。
+            提交：${{ github.sha }}
+            构建号：#${{ github.run_number }}
+            安装：下载后允许“未知来源”安装即可。
           files: app/build/outputs/apk/release/app-release.apk
