@@ -149,14 +149,18 @@ class MainActivity : AppCompatActivity() {
         val bmp = binding.editView.getBitmap() ?: return toast("请先选择图片")
         lifecycleScope.launch {
             setBusy(true)
+            var detected: Bitmap? = null
             try {
                 val mask = withContext(Dispatchers.Default) { OverlayDetector.autoMask(bmp) }
+                detected = mask
                 binding.editView.pushMaskUndo()
                 binding.editView.setMaskFromBitmap(mask)
                 toast("自动检测完成，可手动微调后一键修复")
             } catch (e: Exception) {
                 toast("自动检测失败：${e.message}")
             } finally {
+                // 边界：检测结果是临时蒙版，绘制进画布后即可释放，避免每次检测泄漏一张全尺寸 Bitmap
+                detected?.let { if (!it.isRecycled) it.recycle() }
                 setBusy(false)
             }
         }

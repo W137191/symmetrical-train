@@ -49,11 +49,27 @@ object OverlayDetector {
      * @param sensitivity 0..1，越大检测越宽松（召回高但可能多误圈），越小越严格。
      */
     fun autoMask(src: Bitmap, sensitivity: Float): Bitmap {
-        val sens = sensitivity.coerceIn(0f, 1f)
+        // 边界：输入已回收或尺寸非法时提前给出明确错误，避免 getPixels 抛出含义不清的异常
+        if (src.isRecycled) throw IllegalStateException("源 Bitmap 已回收，无法进行自动检测")
+        if (src.width <= 0 || src.height <= 0) throw IllegalArgumentException("源 Bitmap 尺寸非法")
+
+        // 边界：NaN / 无穷灵敏度会让接受阈值变成 NaN，导致静默返回空掩码；归一化为默认值
+        // （s != s 即 IEEE NaN 判定，避免依赖可能被构建环境裁掉的扩展函数）
+        val sens = if (sensitivity != sensitivity ||
+            sensitivity == Float.POSITIVE_INFINITY || sensitivity == Float.NEGATIVE_INFINITY
+        ) {
+            DEFAULT_SENSITIVITY
+        } else {
+            sensitivity.coerceIn(0f, 1f)
+        }
+
         val longest = max(src.width, src.height)
         val scale = if (longest > MAX_DIM) MAX_DIM.toFloat() / longest else 1f
         val small = if (scale < 1f) {
-            Bitmap.createScaledBitmap(src, (src.width * scale).toInt(), (src.height * scale).toInt(), true)
+            // 边界：极端宽高比下短边取整后可能为 0，createScaledBitmap 会抛异常，保证至少 1px
+            val tw = max(1, (src.width * scale).toInt())
+            val th = max(1, (src.height * scale).toInt())
+            Bitmap.createScaledBitmap(src, tw, th, true)
         } else {
             src
         }
@@ -202,6 +218,9 @@ object OverlayDetector {
             }
         }
         maskSmall.setPixels(mpx2, 0, w, 0, 0, w, h)
+
+        // 中间缩放图仅本函数使用，用完释放；scale >= 1f 时 small 即调用方的 src，不可回收
+        if (scale < 1f) small.recycle()
 
         return if (scale < 1f) {
             val up = Bitmap.createScaledBitmap(maskSmall, src.width, src.height, false) // 最近邻，保持硬边缘

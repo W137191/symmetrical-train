@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 自动检测链路健壮性强化 (2026-11-05)
+- 加强对象：`OverlayDetector.autoMask` 及其调用链（`ImageUtils.decodeSampled` → `MainActivity.runAutoDetect` → `EditView.setMaskFromBitmap`）。
+  公开接口签名、常量、正常路径输出与代码风格均不变；不引入依赖、不新增功能。
+- 覆盖的边界与错误处理：
+  - **极端宽高比**：缩放时短边取整可能为 0，`createScaledBitmap` 会抛异常；两处缩放均保证最小 1px。
+  - **非法灵敏度**：`sensitivity` 为 NaN / ±Inf 时接受阈值变 NaN、静默返回空掩码；归一化为 `DEFAULT_SENSITIVITY`。
+  - **无效输入**：源 Bitmap 已回收或尺寸非法时提前抛出带明确信息的异常，仍由上层既有 `catch` 统一提示。
+  - **尺寸不匹配**：检测掩码与画布尺寸不一致时原本只绘制左上角、造成选区错位；改为按比例缩放对齐，并忽略已回收掩码。
+  - **临时 Bitmap 泄漏**：每次自动检测会遗留中间缩放图（约 700×700）与返回的全尺寸蒙版；确认不再使用后安全回收（scale>=1 时 small 即 src，不回收）。
+- 未改动：启发式算法流程、多特征权重、阈值常量、蒙版颜色与返回尺寸语义。
+
 ## v1.4.0 — UI 全面统一与响应式重构 (2026-11-05)
 - **修复视觉不一致根因**：`Theme.PsApk` 原为 `Theme.AppCompat.Light.NoActionBar`（浅色）却配深色背景，导致按钮 / 输入框 / 进度条 / 光标全为浅色系。改为 `Theme.AppCompat.NoActionBar` 暗色主题，并统一状态栏、导航栏、`colorControl*`、`textColor*`。
 - **新增统一设计系统**：`colors.xml`（背景层次 / 强调 / 文字 / 线条语义色板）、`dimens.xml` + `values-sw600dp/dimens.xml`（间距、圆角、控件、字号及平板适配）、`styles.xml`（标题 / 说明 / 分组 / 三种按钮层级 / 输入框 / 状态条）、`res/color/*` 状态色表、`drawable/*` selector（按压 / 禁用 / 选中态）与 7 个线性矢量图标、`strings.xml`（全部硬编码文案与无障碍描述抽出）。

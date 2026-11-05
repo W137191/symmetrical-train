@@ -106,10 +106,18 @@ class EditView @JvmOverloads constructor(
 
     /** 将检测得到的掩码叠加到当前掩码上。 */
     fun setMaskFromBitmap(mask: Bitmap) {
-        maskCanvas?.let { c ->
-            c.drawBitmap(mask, 0f, 0f, null)
-            invalidate()
+        // 边界：已回收的掩码直接忽略；尺寸不一致时按比例缩放对齐，避免只绘制左上角造成选区错位
+        if (mask.isRecycled) return
+        val target = maskBitmap ?: return
+        val c = maskCanvas ?: return
+        val toDraw = if (mask.width == target.width && mask.height == target.height) {
+            mask
+        } else {
+            Bitmap.createScaledBitmap(mask, target.width, target.height, false)
         }
+        c.drawBitmap(toDraw, 0f, 0f, null)
+        if (toDraw !== mask) toDraw.recycle()
+        invalidate()
     }
 
     /** 为“仅修改掩码”的操作（自动检测 / 外部覆盖）记录一步撤销。 */

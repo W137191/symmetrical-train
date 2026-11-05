@@ -42,8 +42,9 @@ object ImageUtils {
 
         return if (max(bmp.width, bmp.height) > maxDim) {
             val s = maxDim.toFloat() / max(bmp.width, bmp.height)
+            // 边界：极端宽高比下短边取整后可能为 0，保证至少 1px，避免缩放时抛异常
             val scaled = Bitmap.createScaledBitmap(
-                bmp, (bmp.width * s).toInt(), (bmp.height * s).toInt(), true
+                bmp, max(1, (bmp.width * s).toInt()), max(1, (bmp.height * s).toInt()), true
             )
             bmp.recycle()
             scaled
