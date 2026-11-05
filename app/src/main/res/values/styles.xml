@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ============ 文字 ============ -->
+    <style name="Widget.PsApk.Title" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.Caption" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.GroupLabel" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_group</item>
+        <item name="android:letterSpacing">0.10</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.EngineBadge" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/text_group</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.EmptyTitle" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.EmptySub" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- ============ 按钮（三种层级） ============ -->
+    <!-- 次级：深灰面 + 细边框；按压变蓝；禁用灰化 -->
+    <style name="Widget.PsApk.Button" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/bg_btn_secondary</item>
+        <item name="android:textColor">@color/text_button_secondary</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:minHeight">@dimen/control_min_height</item>
+        <item name="android:minWidth">@dimen/button_min_width</item>
+        <item name="android:paddingStart">@dimen/space_sm</item>
+        <item name="android:paddingEnd">@dimen/space_sm</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <!-- 主操作：强调蓝底 + 深色字，全局仅一个，形成明确视觉焦点 -->
+    <style name="Widget.PsApk.Button.Primary" parent="Widget.PsApk.Button">
+        <item name="android:background">@drawable/bg_btn_primary</item>
+        <item name="android:textColor">@color/text_button_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- 切换型：isSelected=true 时常驻高亮，替代「只能靠 Toast 才知道状态」 -->
+    <style name="Widget.PsApk.Button.Toggle" parent="Widget.PsApk.Button">
+        <item name="android:background">@drawable/bg_btn_toggle</item>
+        <item name="android:textColor">@color/text_toggle</item>
+    </style>
+
+    <!-- 快捷道具胶囊 -->
+    <style name="Widget.PsApk.Button.Chip" parent="Widget.PsApk.Button">
+        <item name="android:background">@drawable/bg_btn_chip</item>
+        <item name="android:textColor">@color/text_toggle</item>
+        <item name="android:paddingStart">@dimen/space_md</item>
+        <item name="android:paddingEnd">@dimen/space_md</item>
+    </style>
+
+    <!-- ============ 输入 / 状态条 ============ -->
+    <style name="Widget.PsApk.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_edittext</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:minHeight">@dimen/control_min_height</item>
+        <item name="android:paddingStart">@dimen/space_md</item>
+        <item name="android:paddingEnd">@dimen/space_md</item>
+        <item name="android:paddingTop">@dimen/space_sm</item>
+        <item name="android:paddingBottom">@dimen/space_sm</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="Widget.PsApk.StatusLine" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.PsApk.Tip" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+</resources>

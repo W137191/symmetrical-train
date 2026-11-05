@@ -204,8 +204,9 @@ class TryOnView @JvmOverloads constructor(
             }
         }
         // 绘制控制点（便于微调）
-        val dot = android.graphics.Paint().apply { color = 0x80FFFFFF.toInt(); style = android.graphics.Paint.Style.FILL }
-        val line = android.graphics.Paint().apply { color = 0x40FFFFFF.toInt(); style = android.graphics.Paint.Style.STROKE; strokeWidth = 1.5f }
+        // 网格控制点/连线改用品牌青蓝，与 HUD 配色统一
+        val dot = android.graphics.Paint().apply { color = 0xCC4FC3F7.toInt(); style = android.graphics.Paint.Style.FILL }
+        val line = android.graphics.Paint().apply { color = 0x664FC3F7.toInt(); style = android.graphics.Paint.Style.STROKE; strokeWidth = 1.5f }
         for (i in 0..GRID) for (j in 0..GRID) {
             val e = eff(i, j)
             canvas.drawCircle(e.x, e.y, 4f, dot)

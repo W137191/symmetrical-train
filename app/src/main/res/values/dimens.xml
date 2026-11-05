@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 间距 -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">48dp</dimen>
+    <dimen name="page_padding">12dp</dimen>
+
+    <!-- 圆角与描边 -->
+    <dimen name="radius_sm">6dp</dimen>
+    <dimen name="radius_md">10dp</dimen>
+    <dimen name="radius_lg">18dp</dimen>
+    <dimen name="stroke">1dp</dimen>
+
+    <!-- 控件尺寸 -->
+    <dimen name="toolbar_height">52dp</dimen>
+    <dimen name="control_min_height">44dp</dimen>
+    <dimen name="button_min_width">72dp</dimen>
+    <dimen name="canvas_min_height">160dp</dimen>
+    <dimen name="empty_icon_size">56dp</dimen>
+
+    <!-- 字号 -->
+    <dimen name="text_title">17sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_group">11sp</dimen>
+</resources>

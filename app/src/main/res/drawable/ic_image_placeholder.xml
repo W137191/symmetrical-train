@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 空状态大图标：细线风格，与整体极简 HUD 保持一致 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="56dp"
+    android:height="56dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M3,5 L21,5 L21,19 L3,19 Z M5,16 L10,11 L13,14 L15,12 L19,16 M8,9 L8,9.01 M16,8 L16,8.01"
+        android:strokeColor="#45607F"
+        android:strokeWidth="0.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent" />
+</vector>

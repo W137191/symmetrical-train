@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PsApk" parent="Theme.AppCompat.Light.NoActionBar">
+    <!--
+      统一暗色主题：原 Light 主题配深色背景，导致按钮/输入框/光标/进度条全是浅色系，
+      是全局视觉不一致的根因。改用 AppCompat 暗色基础主题，使系统控件与深色 UI 协调。
+    -->
+    <style name="Theme.PsApk" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">#0E1424</item>
+
+        <item name="android:windowBackground">@color/bg_app</item>
+        <item name="android:colorBackground">@color/bg_app</item>
+        <item name="android:statusBarColor">@color/bg_toolbar</item>
+        <item name="android:navigationBarColor">@color/bg_toolbar</item>
+
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+
+        <!-- 统一 SeekBar / 输入框光标 / 选中高亮 -->
+        <item name="colorControlNormal">@color/border_strong</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="colorControlHighlight">@color/accent_selected</item>
     </style>
 </resources>

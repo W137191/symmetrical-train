@@ -43,9 +43,10 @@ class EditView @JvmOverloads constructor(
     /** 载入时的原始图像，用于对比模式。 */
     private var compareOriginal: Bitmap? = null
 
+    // 蒙版色与强调色收敛到统一色板：柔和珊瑚红表示待修复区，品牌青蓝表示对比分割线
     private val drawPaint = Paint().apply {
         isAntiAlias = true
-        color = Color.RED
+        color = 0xFFEF6B73.toInt()
         alpha = 170
     }
     private val erasePaint = Paint().apply {
@@ -54,7 +55,7 @@ class EditView @JvmOverloads constructor(
         color = Color.TRANSPARENT
     }
     private val linePaint = Paint().apply {
-        color = Color.WHITE
+        color = 0xFF4FC3F7.toInt()
         isAntiAlias = true
     }
 

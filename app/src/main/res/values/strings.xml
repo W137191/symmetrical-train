@@ -1,3 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AIPS</string>
+    <string name="title_costume">换装相机</string>
+    <string name="title_tryon">虚拟试穿</string>
+    <string name="action_back">返回</string>
+
+    <!-- 标题栏引擎标识 -->
+    <string name="engine_ml">ML</string>
+    <string name="engine_fmm">FMM</string>
+
+    <!-- 通用动作 -->
+    <string name="gallery">相册</string>
+    <string name="camera">拍照</string>
+    <string name="auto_detect">自动检测</string>
+    <string name="brush_minus">笔刷 -</string>
+    <string name="brush_plus">笔刷 +</string>
+    <string name="erase">橡皮</string>
+    <string name="mask">蒙版</string>
+    <string name="compare">对比</string>
+    <string name="undo">撤销</string>
+    <string name="process">一键修复</string>
+    <string name="save">保存</string>
+    <string name="reset">重置</string>
+    <string name="reset_pos">重置位置</string>
+    <string name="entry_costume">换装相机</string>
+    <string name="entry_tryon">虚拟试穿</string>
+
+    <!-- 状态行 -->
+    <string name="status_initial">笔刷 40 · 涂抹中 · 蒙版显示 · 对比关闭</string>
+    <string name="status_line">笔刷 %1$d · %2$s · %3$s · %4$s</string>
+    <string name="mode_draw">涂抹中</string>
+    <string name="mode_erase">橡皮中</string>
+    <string name="mask_on">蒙版显示</string>
+    <string name="mask_off">蒙版隐藏</string>
+    <string name="compare_on">对比开启</string>
+    <string name="compare_off">对比关闭</string>
+
+    <!-- 分组标签 -->
+    <string name="group_input">01 · 选图与检测</string>
+    <string name="group_edit">02 · 涂抹与查看</string>
+    <string name="group_output">03 · 修复与导出</string>
+    <string name="group_more">更多功能</string>
+    <string name="group_desc">服装描述</string>
+    <string name="group_presets">快捷道具</string>
+    <string name="group_adjust">微调</string>
+    <string name="group_actions">选图与导出</string>
+    <string name="group_type">服饰类型</string>
+    <string name="group_steps">操作步骤</string>
+
+    <!-- 空状态 -->
+    <string name="empty_main_title">还没有选择图片</string>
+    <string name="empty_main_sub">从相册选图或拍照，再涂抹 / 自动检测需要去除的叠加物</string>
+    <string name="empty_costume_title">还没有人物照片</string>
+    <string name="empty_costume_sub">先选择一张人物照片，再挑选服装或输入描述</string>
+    <string name="empty_tryon_title">还没有人物照片</string>
+    <string name="empty_tryon_sub">先点「选人物」，再选服饰并涂抹出服饰区域</string>
+
+    <!-- 忙碌 / 提示 -->
+    <string name="busy_processing">正在处理，请稍候…</string>
+    <string name="tip_tryon_initial">① 先点「选人物」载入人物照片</string>
+    <string name="saved_toast">已保存到相册：%1$s</string>
+    <string name="scale_toast">缩放 %1$s×</string>
+    <string name="rotate_toast">旋转 %1$s°</string>
+    <string name="toast_reset_pos">已重置位置</string>
+    <string name="toast_brush_min">已是最小笔刷</string>
+    <string name="toast_brush_max">已是最大笔刷</string>
+
+    <!-- 换装 / 试穿 -->
+    <string name="hint_desc">描述想穿的服装，如：超级英雄披风、公主皇冠</string>
+    <string name="apply_desc">应用描述</string>
+    <string name="scale">缩放</string>
+    <string name="rotate">旋转</string>
+    <string name="type_top">上衣</string>
+    <string name="type_pants">裤子</string>
+    <string name="type_skirt">裙子</string>
+    <string name="type_other">其他</string>
+    <string name="person">选人物</string>
+    <string name="garment">选服饰</string>
+    <string name="confirm_cutout">确认裁切</string>
+
+    <!-- 无障碍 -->
+    <string name="cd_back">返回上一页</string>
+    <string name="cd_gallery">从相册选择图片</string>
+    <string name="cd_camera">拍照</string>
+    <string name="cd_auto">自动检测遮挡区域</string>
+    <string name="cd_fix">一键修复</string>
+    <string name="cd_save">保存到相册</string>
+    <string name="cd_empty">暂无图片</string>
 </resources>

@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -28,6 +30,8 @@ class CostumeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCostumeBinding
     private val generator: CostumeGenerator = KeywordCostumeGenerator()
     private var cameraUri: Uri? = null
+    private var selectedChip: Button? = null
+    private var selectedCostumeName: String? = null
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { loadPerson(it) }
@@ -60,6 +64,9 @@ class CostumeActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener { save() }
         binding.btnResetPos.setOnClickListener {
             binding.costumeView.resetPlacement()
+            binding.seekScale.progress = 100
+            binding.seekRotate.progress = 180
+            toast(getString(R.string.toast_reset_pos))
         }
         binding.btnApplyDesc.setOnClickListener {
             val desc = binding.editDesc.text.toString().trim()
@@ -77,34 +84,55 @@ class CostumeActivity : AppCompatActivity() {
                 binding.costumeView.setRelScale(p / 100f)
             }
             override fun onStartTrackingTouch(s: SeekBar?) {}
-            override fun onStopTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                val v = (s?.progress ?: 100) / 100f
+                toast(getString(R.string.scale_toast, String.format(Locale.US, "%.2f", v)))
+            }
         })
         binding.seekRotate.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar?, p: Int, f: Boolean) {
                 binding.costumeView.setRotationDeg(p - 180f)
             }
             override fun onStartTrackingTouch(s: SeekBar?) {}
-            override fun onStopTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                val deg = (s?.progress ?: 180) - 180
+                toast(getString(R.string.rotate_toast, deg.toString()))
+            }
         })
 
         buildCostumeChips()
-        // 默认进入时给一个示例提示
-        toast("请先选择人物照片，再选服装或输入描述")
+        // 空状态常驻在画布上，不再依赖一闪而过的 Toast 做引导
     }
 
+    /** 快捷道具胶囊：统一圆角/状态色，并支持选中态常驻高亮。 */
     private fun buildCostumeChips() {
         val list = binding.costumeList
         list.removeAllViews()
+        val pad = resources.getDimensionPixelSize(R.dimen.space_md)
+        val minH = resources.getDimensionPixelSize(R.dimen.control_min_height)
+        val minW = resources.getDimensionPixelSize(R.dimen.button_min_width)
+        val textPx = resources.getDimension(R.dimen.text_body)
         for (c in CostumeLibrary.all) {
             val btn = Button(this).apply {
                 text = c.name
-                setOnClickListener { selectCostume(c) }
+                setAllCaps(false)
+                setBackgroundResource(R.drawable.bg_btn_chip)
+                setTextColor(ContextCompat.getColorStateList(this@CostumeActivity, R.color.text_toggle)!!)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx)
+                minHeight = minH
+                minimumWidth = minW
+                setPadding(pad, 0, pad, 0)
+                isSelected = c.name == selectedCostumeName
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
                 lp.setMargins(4, 0, 4, 0)
                 layoutParams = lp
+                setOnClickListener {
+                    selectCostume(c)
+                    toast("已选择：${c.name}")
+                }
             }
             list.addView(btn)
         }
@@ -118,6 +146,17 @@ class CostumeActivity : AppCompatActivity() {
         binding.costumeView.setCostume(c)
         binding.seekScale.progress = 100
         binding.seekRotate.progress = 180
+        selectedCostumeName = c.name
+        selectedChip?.isSelected = false
+        selectedChip = null
+        for (i in 0 until binding.costumeList.childCount) {
+            val child = binding.costumeList.getChildAt(i) as? Button
+            if (child != null && child.text.toString() == c.name) {
+                child.isSelected = true
+                selectedChip = child
+                break
+            }
+        }
     }
 
     private fun launchCamera() {
@@ -129,6 +168,7 @@ class CostumeActivity : AppCompatActivity() {
         try {
             val bmp = ImageUtils.decodeSampled(this, uri)
             binding.costumeView.setPerson(bmp)
+            binding.emptyState.visibility = View.GONE
             toast("人物已载入，选择服装或输入描述")
         } catch (e: Exception) {
             toast("加载失败：${e.message}")
@@ -138,13 +178,16 @@ class CostumeActivity : AppCompatActivity() {
     private fun save() {
         if (!binding.costumeView.hasPerson()) return toast("请先选择人物照片")
         lifecycleScope.launch {
+            binding.btnSave.isEnabled = false
             try {
                 val bmp = withContext(Dispatchers.IO) { binding.costumeView.composeToBitmap() }
                 val name = "Costume_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}"
-                val uri = withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@CostumeActivity, bmp, name) }
-                toast("已保存到相册：$uri")
+                withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@CostumeActivity, bmp, name) }
+                toast(getString(R.string.saved_toast, name))
             } catch (e: Exception) {
                 toast("保存失败：${e.message}")
+            } finally {
+                binding.btnSave.isEnabled = true
             }
         }
     }

@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.4.0 — UI 全面统一与响应式重构 (2026-11-05)
+- **修复视觉不一致根因**：`Theme.PsApk` 原为 `Theme.AppCompat.Light.NoActionBar`（浅色）却配深色背景，导致按钮 / 输入框 / 进度条 / 光标全为浅色系。改为 `Theme.AppCompat.NoActionBar` 暗色主题，并统一状态栏、导航栏、`colorControl*`、`textColor*`。
+- **新增统一设计系统**：`colors.xml`（背景层次 / 强调 / 文字 / 线条语义色板）、`dimens.xml` + `values-sw600dp/dimens.xml`（间距、圆角、控件、字号及平板适配）、`styles.xml`（标题 / 说明 / 分组 / 三种按钮层级 / 输入框 / 状态条）、`res/color/*` 状态色表、`drawable/*` selector（按压 / 禁用 / 选中态）与 7 个线性矢量图标、`strings.xml`（全部硬编码文案与无障碍描述抽出）。
+- **布局混乱治理**：三页统一标题栏（左右等宽占位使标题真正居中，返回改为图标按钮）；主页按钮由 7 行压缩到 5 行，功能入口移出画布上方；换装 / 试穿微调区由「两个 SeekBar 挤一行」改为各占一行，道具胶囊横向滚动；所有按钮统一圆角 / 描边 / 44dp 触摸目标，每页仅一个强调色主按钮。
+- **响应式适配**：画布 `weight=1 + minHeight`，工具区改为独立 `ScrollView` 并按 weight 分配，横屏 / 小屏仍可触达全部按钮；`sw600dp` 放大间距与字号；`fitsSystemWindows` + 状态栏配色；去掉 emoji 文案改用矢量图标。
+- **交互反馈补齐**：
+  - 主页新增常驻状态行（笔刷大小 / 涂抹·橡皮 / 蒙版显隐 / 对比开关）；切换按钮用 `isSelected` 常驻高亮；笔刷到上下限给明确提示。
+  - 新增空状态引导（图标 + 主/次文案）与忙碌遮罩（进度环 +「正在处理」+ 屏蔽误触）；`setBusy` 补上此前漏禁用的两个功能入口按钮。
+  - 换装页道具胶囊、试穿页服饰类型支持选中态；重置 / 滑块松手 / 选择服装均有反馈；保存成功改为显示文件名而非 `content://` Uri；标题栏右侧显示当前生效引擎（ML / FMM）。
+  - 画布内用色收敛到色板：蒙版由纯红改柔和珊瑚红、对比分割线与试穿网格改品牌青蓝。
+- **版本**：`versionCode` 1→2，`versionName` 1.0→1.4.0；`AndroidManifest` 活动标签改用 string 资源。
+
 ## 端侧 ML 修复（LaMa-Dilated / LiteRT）（第三梯队）(2026-11-04)
 - 新增 `MLInpainter.kt`：接入 **LaMa-Dilated** 的 TensorFlow Lite 权重（`app/src/main/assets/lama_dilated.tflite`），
   在端侧完成高质量修复。支持动态读取模型输入尺寸（通常 512×512），自动兼容 NHWC/NCHW 布局与「单输入 4 通道拼接」变体；

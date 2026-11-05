@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 兼容原有主题引用 -->
     <color name="colorPrimary">#1F2A44</color>
     <color name="colorPrimaryDark">#15203A</color>
     <color name="colorAccent">#4FC3F7</color>
     <color name="ic_launcher_background">#1F2A44</color>
+
+    <!-- 背景层次：由深到浅 -->
+    <color name="bg_app">#0E1424</color>
+    <color name="bg_toolbar">#131C30</color>
+    <color name="bg_surface">#161F33</color>
+    <color name="bg_surface_alt">#1B2740</color>
+    <color name="bg_canvas">#080D18</color>
+    <color name="bg_overlay">#B30B1220</color>
+
+    <!-- 强调色与状态 -->
+    <color name="accent">#4FC3F7</color>
+    <color name="accent_pressed">#3AA8DC</color>
+    <color name="accent_disabled">#2A4257</color>
+    <color name="accent_selected">#1D4763</color>
+    <color name="danger">#EF6B73</color>
+    <color name="mask_overlay">#88EF6B73</color>
+
+    <!-- 文字 -->
+    <color name="text_primary">#F2F6FC</color>
+    <color name="text_secondary">#B9C6DA</color>
+    <color name="text_hint">#7C8AA3</color>
+    <color name="text_on_accent">#0B1522</color>
+    <color name="text_disabled">#63718A</color>
+
+    <!-- 线条 -->
+    <color name="border">#2C3A55</color>
+    <color name="border_strong">#45607F</color>
+    <color name="divider">#22304A</color>
 </resources>

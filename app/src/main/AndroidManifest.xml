@@ -27,13 +27,13 @@
         <activity
             android:name=".CostumeActivity"
             android:exported="false"
-            android:label="换装相机"
+            android:label="@string/title_costume"
             android:screenOrientation="unspecified" />
 
         <activity
             android:name=".TryOnActivity"
             android:exported="false"
-            android:label="虚拟试穿"
+            android:label="@string/title_tryon"
             android:screenOrientation="unspecified" />
 
     </application>

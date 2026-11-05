@@ -1,6 +1,7 @@
 package com.example.psapk
 
 import kotlin.math.max
+import kotlin.math.min
 
 import android.Manifest
 import android.content.Intent
@@ -64,30 +65,66 @@ class MainActivity : AppCompatActivity() {
         binding.btnReset.setOnClickListener { reset() }
 
         binding.btnBrushPlus.setOnClickListener {
-            binding.editView.brushSize += 20f
-            toast("笔刷 ${binding.editView.brushSize.toInt()}")
+            val old = binding.editView.brushSize
+            binding.editView.brushSize = min(200f, old + 20f)
+            updateStatusLine()
+            if (binding.editView.brushSize == old) toast(getString(R.string.toast_brush_max))
         }
         binding.btnBrushMinus.setOnClickListener {
-            binding.editView.brushSize = max(10f, binding.editView.brushSize - 20f)
-            toast("笔刷 ${binding.editView.brushSize.toInt()}")
+            val old = binding.editView.brushSize
+            binding.editView.brushSize = max(10f, old - 20f)
+            updateStatusLine()
+            if (binding.editView.brushSize == old) toast(getString(R.string.toast_brush_min))
         }
         binding.btnErase.setOnClickListener {
             binding.editView.mode = if (binding.editView.mode == EditView.MODE_DRAW) EditView.MODE_ERASE else EditView.MODE_DRAW
-            toast(if (binding.editView.mode == EditView.MODE_ERASE) "已切换：橡皮（擦除选区）" else "已切换：涂抹（选择遮挡）")
+            binding.btnErase.isSelected = binding.editView.mode == EditView.MODE_ERASE
+            updateStatusLine()
         }
         binding.btnMask.setOnClickListener {
             binding.editView.showMask = !binding.editView.showMask
             binding.editView.invalidate()
-            toast(if (binding.editView.showMask) "蒙版：显示" else "蒙版：隐藏")
+            binding.btnMask.isSelected = binding.editView.showMask
+            updateStatusLine()
         }
         binding.btnCompare.setOnClickListener {
             binding.editView.compareMode = !binding.editView.compareMode
             binding.editView.invalidate()
-            toast(if (binding.editView.compareMode) "对比模式：拖动查看原图/修复" else "对比模式：关闭")
+            binding.btnCompare.isSelected = binding.editView.compareMode
+            updateStatusLine()
         }
         binding.btnUndo.setOnClickListener {
             if (binding.editView.undo()) toast("已撤销上一步") else toast("没有可撤销的操作")
         }
+
+        // 初始状态：切换按钮常驻选中态、状态行、空状态引导、当前修复引擎
+        binding.btnMask.isSelected = binding.editView.showMask
+        binding.btnErase.isSelected = binding.editView.mode == EditView.MODE_ERASE
+        binding.btnCompare.isSelected = binding.editView.compareMode
+        updateStatusLine()
+        updateEmptyState()
+        updateEngineBadge()
+    }
+
+    /** 常驻状态行：把原先只能靠 Toast 获知的信息直接显示出来。 */
+    private fun updateStatusLine() {
+        val ev = binding.editView
+        val mode = getString(if (ev.mode == EditView.MODE_ERASE) R.string.mode_erase else R.string.mode_draw)
+        val mask = getString(if (ev.showMask) R.string.mask_on else R.string.mask_off)
+        val cmp = getString(if (ev.compareMode) R.string.compare_on else R.string.compare_off)
+        binding.tvStatusLine.text = getString(R.string.status_line, ev.brushSize.toInt(), mode, mask, cmp)
+    }
+
+    private fun updateEmptyState() {
+        binding.emptyState.visibility =
+            if (binding.editView.getBitmap() == null) View.VISIBLE else View.GONE
+    }
+
+    /** 标题栏右侧显示实际生效的修复引擎：ML 权重存在时为 ML，否则经典 FMM。 */
+    private fun updateEngineBadge() {
+        binding.tvEngine.text = getString(
+            if (MLInpainter.isAvailable(this)) R.string.engine_ml else R.string.engine_fmm
+        )
     }
 
     private fun loadImage(uri: Uri) {
@@ -96,6 +133,7 @@ class MainActivity : AppCompatActivity() {
             original?.recycle()
             original = bmp
             binding.editView.setBitmap(bmp)
+            updateEmptyState()
             toast("图片已载入，请涂抹或自动检测遮挡区域")
         } catch (e: Exception) {
             toast("加载失败：${e.message}")
@@ -148,12 +186,15 @@ class MainActivity : AppCompatActivity() {
     private fun runSave() {
         val bmp = binding.editView.getBitmap() ?: return toast("请先选择图片")
         lifecycleScope.launch {
+            binding.btnSave.isEnabled = false
             try {
                 val name = "PSFix_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}"
-                val uri = withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@MainActivity, bmp, name) }
-                toast("已保存到相册：$uri")
+                withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@MainActivity, bmp, name) }
+                toast(getString(R.string.saved_toast, name))
             } catch (e: Exception) {
                 toast("保存失败：${e.message}")
+            } finally {
+                binding.btnSave.isEnabled = true
             }
         }
     }
@@ -161,23 +202,19 @@ class MainActivity : AppCompatActivity() {
     private fun reset() {
         original?.let { binding.editView.setBitmap(Bitmap.createBitmap(it)) }
             ?: toast("尚未载入图片")
+        updateEmptyState()
     }
 
     private fun setBusy(busy: Boolean) {
-        binding.progress.visibility = if (busy) View.VISIBLE else View.GONE
+        // 常驻忙碌遮罩（含「正在处理」文案）并屏蔽误触，覆盖此前漏掉的两个功能入口按钮
+        binding.busyOverlay.visibility = if (busy) View.VISIBLE else View.GONE
         val enable = !busy
-        binding.btnGallery.isEnabled = enable
-        binding.btnCamera.isEnabled = enable
-        binding.btnAuto.isEnabled = enable
-        binding.btnProcess.isEnabled = enable
-        binding.btnSave.isEnabled = enable
-        binding.btnReset.isEnabled = enable
-        binding.btnBrushPlus.isEnabled = enable
-        binding.btnBrushMinus.isEnabled = enable
-        binding.btnErase.isEnabled = enable
-        binding.btnMask.isEnabled = enable
-        binding.btnCompare.isEnabled = enable
-        binding.btnUndo.isEnabled = enable
+        listOf(
+            binding.btnGallery, binding.btnCamera, binding.btnAuto, binding.btnProcess,
+            binding.btnSave, binding.btnReset, binding.btnBrushPlus, binding.btnBrushMinus,
+            binding.btnErase, binding.btnMask, binding.btnCompare, binding.btnUndo,
+            binding.btnCostume, binding.btnTryOn
+        ).forEach { it.isEnabled = enable }
     }
 
     private fun toast(msg: String) {

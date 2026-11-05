@@ -1,12 +1,12 @@
 package com.example.psapk
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,7 +55,12 @@ class TryOnActivity : AppCompatActivity() {
         binding.btnGarment.setOnClickListener { pickGarment.launch("image/*") }
         binding.btnConfirmCutout.setOnClickListener { confirmCutout() }
         binding.btnSave.setOnClickListener { save() }
-        binding.btnReset.setOnClickListener { binding.tryOnView.resetPlacement() }
+        binding.btnReset.setOnClickListener {
+            binding.tryOnView.resetPlacement()
+            binding.seekScale.progress = 100
+            binding.seekRotate.progress = 180
+            toast(getString(R.string.toast_reset_pos))
+        }
 
         binding.btnTypeTop.setOnClickListener { setType(TryOnView.TYPE_TOP) }
         binding.btnTypePants.setOnClickListener { setType(TryOnView.TYPE_PANTS) }
@@ -65,15 +70,22 @@ class TryOnActivity : AppCompatActivity() {
         binding.seekScale.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar?, p: Int, f: Boolean) { binding.tryOnView.setGlobalScale(p / 100f) }
             override fun onStartTrackingTouch(s: SeekBar?) {}
-            override fun onStopTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                val v = (s?.progress ?: 100) / 100f
+                toast(getString(R.string.scale_toast, String.format(Locale.US, "%.2f", v)))
+            }
         })
         binding.seekRotate.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar?, p: Int, f: Boolean) { binding.tryOnView.setGlobalRotDeg(p - 180f) }
             override fun onStartTrackingTouch(s: SeekBar?) {}
-            override fun onStopTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                val deg = (s?.progress ?: 180) - 180
+                toast(getString(R.string.rotate_toast, deg.toString()))
+            }
         })
 
-        showTip("① 先点「选人物」载入人物照片")
+        setType(TryOnView.TYPE_TOP)
+        showTip(getString(R.string.tip_tryon_initial))
     }
 
     private fun pickOrCapturePerson() {
@@ -91,6 +103,7 @@ class TryOnActivity : AppCompatActivity() {
         try {
             val bmp = ImageUtils.decodeSampled(this, uri)
             binding.tryOnView.setPerson(bmp)
+            binding.emptyState.visibility = View.GONE
             showTryOnView()
             showTip("② 点「选服饰」并涂抹出服饰区域")
         } catch (e: Exception) {
@@ -103,6 +116,7 @@ class TryOnActivity : AppCompatActivity() {
             val bmp = ImageUtils.decodeSampled(this, uri, 1000)
             garmentBmp = bmp
             binding.cutoutView.setBitmap(bmp)
+            binding.emptyState.visibility = View.GONE
             showCutoutView()
             showTip("在服饰照片上涂抹出要试穿的部分（透明底 PNG 可整图涂抹），然后点「确认裁切」")
         } catch (e: Exception) {
@@ -153,30 +167,38 @@ class TryOnActivity : AppCompatActivity() {
 
     private fun setType(t: String) {
         type = t
+        // 服饰类型按钮常驻高亮，替代「点完不知道选了哪个」
+        binding.btnTypeTop.isSelected = t == TryOnView.TYPE_TOP
+        binding.btnTypePants.isSelected = t == TryOnView.TYPE_PANTS
+        binding.btnTypeSkirt.isSelected = t == TryOnView.TYPE_SKIRT
+        binding.btnTypeOther.isSelected = t == TryOnView.TYPE_OTHER
         if (binding.tryOnView.hasGarment()) binding.tryOnView.setType(t)
     }
 
     private fun save() {
         if (!binding.tryOnView.hasPerson() || !binding.tryOnView.hasGarment()) return toast("请先完成人物与服饰的试穿")
         lifecycleScope.launch {
+            binding.btnSave.isEnabled = false
             try {
                 val bmp = withContext(Dispatchers.IO) { binding.tryOnView.composeToBitmap() }
                 val name = "TryOn_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}"
-                val uri = withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@TryOnActivity, bmp, name) }
-                toast("已保存到相册：$uri")
+                withContext(Dispatchers.IO) { ImageUtils.saveToGallery(this@TryOnActivity, bmp, name) }
+                toast(getString(R.string.saved_toast, name))
             } catch (e: Exception) {
                 toast("保存失败：${e.message}")
+            } finally {
+                binding.btnSave.isEnabled = true
             }
         }
     }
 
     private fun showTryOnView() {
-        binding.tryOnView.visibility = android.view.View.VISIBLE
-        binding.cutoutView.visibility = android.view.View.GONE
+        binding.tryOnView.visibility = View.VISIBLE
+        binding.cutoutView.visibility = View.GONE
     }
     private fun showCutoutView() {
-        binding.cutoutView.visibility = android.view.View.VISIBLE
-        binding.tryOnView.visibility = android.view.View.GONE
+        binding.cutoutView.visibility = View.VISIBLE
+        binding.tryOnView.visibility = View.GONE
     }
     private fun showTip(s: String) { binding.tip.text = s }
 

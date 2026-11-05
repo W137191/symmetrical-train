@@ -186,7 +186,7 @@ object OverlayDetector {
         val maskSmall = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val mpx = IntArray(n)
         for (i in 0 until n) {
-            if (comp[i] >= 0 && keeps[comp[i]]) mpx[i] = 0x88FF0000.toInt()
+            if (comp[i] >= 0 && keeps[comp[i]]) mpx[i] = 0x88EF6B73.toInt()
         }
         // 膨胀：保留像素的 4 邻域也标红，避免修复后留下细边残影
         val mpx2 = mpx.copyOf()
@@ -194,10 +194,10 @@ object OverlayDetector {
             for (x in 0 until w) {
                 val i = y * w + x
                 if (mpx[i] != 0) {
-                    if (x > 0) mpx2[i - 1] = 0x88FF0000.toInt()
-                    if (x < w - 1) mpx2[i + 1] = 0x88FF0000.toInt()
-                    if (y > 0) mpx2[i - w] = 0x88FF0000.toInt()
-                    if (y < h - 1) mpx2[i + w] = 0x88FF0000.toInt()
+                    if (x > 0) mpx2[i - 1] = 0x88EF6B73.toInt()
+                    if (x < w - 1) mpx2[i + 1] = 0x88EF6B73.toInt()
+                    if (y > 0) mpx2[i - w] = 0x88EF6B73.toInt()
+                    if (y < h - 1) mpx2[i + w] = 0x88EF6B73.toInt()
                 }
             }
         }

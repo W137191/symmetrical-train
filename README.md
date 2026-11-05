@@ -13,6 +13,9 @@
 - **修复前后对比滑块**：「对比」模式下拖动分割线，左侧显示原图、右侧显示修复结果，直观查看差异。
 - **撤销**：支持逐步撤销修复、笔刷/橡皮涂抹与自动检测选区（最多 8 步，内存安全回收）。
 - **保存**：结果以 PNG 保存到相册 `Pictures/PsApk`。
+- **统一暗色界面**：三页共用一套设计语言（语义色板 + 圆角细边框 + 三级按钮层级 + 线性矢量图标），
+  常驻状态行显示笔刷 / 模式 / 蒙版 / 对比状态，空状态与忙碌过程均有明确引导与反馈。
+- **响应式适配**：画布随屏幕自适应并保留最小高度，工具区独立可滚动；平板 / 宽屏自动放大间距与字号。
 
 ## 技术要点
 - 以纯 Kotlin 为主实现，核心修复/检测算法零依赖、开箱即可编译运行；
@@ -26,6 +29,9 @@
 - 端侧 ML 修复 `MLInpainter.kt`：接入 **LaMa-Dilated** 的 TensorFlow Lite 权重（`app/src/main/assets/lama_dilated.tflite`），
   在端侧完成高质量修复；`MainActivity` 一键修复时优先尝试 ML，失败/缺模型自动回退 `Inpainter`（Telea）。
   详见 `app/src/main/assets/README.md` 的权重获取与 I/O 约定（约 174 MB，会显著增大 APK，默认不入库）。
+- UI 设计系统（`values/colors.xml` / `dimens.xml` / `themes.xml` / `styles.xml`、`res/color`、`drawable`）：
+  暗色 AppCompat 主题配深色背景，颜色 / 间距 / 字号 / 圆角全部资源化；按钮通过 state selector 提供按压、
+  禁用、选中态；`values-sw600dp` 提供平板尺寸覆盖。所有静态文案集中在 `strings.xml`。
 
 ## 构建与运行
 1. 用 **Android Studio (Hedgehog 或更新)** 打开本目录（`File → Open` 选择 `D:/1/PsApk`）。

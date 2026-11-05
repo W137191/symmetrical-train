@@ -2,99 +2,312 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1424"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:background="@color/bg_app"
+    android:fitsSystemWindows="true">
 
+    <!-- 统一标题栏 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/toolbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_toolbar"
+        android:paddingStart="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_sm">
 
-        <Button
+        <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← 返回" />
+            android:layout_width="@dimen/space_xl"
+            android:layout_height="@dimen/space_xl"
+            android:background="@drawable/bg_btn_icon"
+            android:src="@drawable/ic_back"
+            android:scaleType="center"
+            android:contentDescription="@string/cd_back" />
 
         <TextView
+            style="@style/Widget.PsApk.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="虚拟试穿"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:text="@string/title_tryon" />
+
+        <View
+            android:layout_width="@dimen/space_xl"
+            android:layout_height="1dp" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:minHeight="@dimen/canvas_min_height"
+        android:layout_marginStart="@dimen/page_padding"
+        android:layout_marginEnd="@dimen/page_padding"
+        android:layout_marginTop="@dimen/space_sm"
+        android:background="@drawable/bg_canvas_frame">
 
-        <com.example.psapk.TryOnView
-            android:id="@+id/tryOnView"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.example.psapk.TryOnView
+                android:id="@+id/tryOnView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent" />
+
+            <com.example.psapk.EditView
+                android:id="@+id/cutoutView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/emptyState"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#000000" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/space_lg">
 
-        <com.example.psapk.EditView
-            android:id="@+id/cutoutView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#000000"
-            android:visibility="gone" />
+            <ImageView
+                android:layout_width="@dimen/empty_icon_size"
+                android:layout_height="@dimen/empty_icon_size"
+                android:src="@drawable/ic_image_placeholder"
+                android:contentDescription="@null" />
+
+            <TextView
+                style="@style/Widget.PsApk.EmptyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/empty_tryon_title" />
+
+            <TextView
+                style="@style/Widget.PsApk.EmptySub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/empty_tryon_sub" />
+        </LinearLayout>
     </FrameLayout>
 
+    <!-- 步骤提示：由普通文字升级为带背景的常驻状态条 -->
     <TextView
         android:id="@+id/tip"
+        style="@style/Widget.PsApk.Tip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="① 选人物 → ② 选服饰并涂抹出服饰区域 → ③ 确认裁切后拖动网格点贴合"
-        android:textColor="#BBBBBB"
-        android:textSize="12sp"
-        android:gravity="center"
-        android:padding="4dp" />
+        android:layout_marginStart="@dimen/page_padding"
+        android:layout_marginEnd="@dimen/page_padding"
+        android:layout_marginTop="@dimen/space_sm"
+        android:background="@drawable/bg_tip"
+        android:paddingStart="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_sm"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:text="@string/tip_tryon_initial" />
 
-    <!-- 服饰类型 -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="0.85"
+        android:layout_marginTop="@dimen/space_xs"
+        android:paddingStart="@dimen/page_padding"
+        android:paddingEnd="@dimen/page_padding"
+        android:paddingBottom="@dimen/space_sm"
+        android:scrollbars="none">
 
-        <Button android:id="@+id/btnTypeTop" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="上衣" />
-        <Button android:id="@+id/btnTypePants" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="裤子" />
-        <Button android:id="@+id/btnTypeSkirt" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="裙子" />
-        <Button android:id="@+id/btnTypeOther" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="其他" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- 微调 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            <!-- 服饰类型：Toggle 样式，当前类型常驻高亮 -->
+            <TextView
+                style="@style/Widget.PsApk.GroupLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/group_type" />
 
-        <Button android:id="@+id/btnReset" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="重置" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal">
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="缩放" android:textColor="#CCCCCC" android:textSize="12sp" />
-        <SeekBar android:id="@+id/seekScale" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="300" android:progress="100" />
+                <Button
+                    android:id="@+id/btnTypeTop"
+                    style="@style/Widget.PsApk.Button.Toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/type_top" />
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="旋转" android:textColor="#CCCCCC" android:textSize="12sp" />
-        <SeekBar android:id="@+id/seekRotate" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="360" android:progress="180" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnTypePants"
+                    style="@style/Widget.PsApk.Button.Toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/type_pants" />
 
-    <!-- 步骤 / 动作 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnTypeSkirt"
+                    style="@style/Widget.PsApk.Button.Toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/type_skirt" />
 
-        <Button android:id="@+id/btnPerson" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="选人物" />
-        <Button android:id="@+id/btnGarment" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="选服饰" />
-        <Button android:id="@+id/btnConfirmCutout" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="确认裁切" />
-        <Button android:id="@+id/btnSave" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="保存" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnTypeOther"
+                    style="@style/Widget.PsApk.Button.Toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/type_other" />
+            </LinearLayout>
+
+            <!-- 微调：两个 SeekBar 各占一行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/Widget.PsApk.GroupLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/group_adjust" />
+
+                <Button
+                    android:id="@+id/btnReset"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reset" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/Widget.PsApk.Caption"
+                    android:layout_width="@dimen/space_xl"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scale" />
+
+                <SeekBar
+                    android:id="@+id/seekScale"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="300"
+                    android:progress="100"
+                    android:progressTint="@color/accent"
+                    android:thumbTint="@color/accent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/Widget.PsApk.Caption"
+                    android:layout_width="@dimen/space_xl"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rotate" />
+
+                <SeekBar
+                    android:id="@+id/seekRotate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="360"
+                    android:progress="180"
+                    android:progressTint="@color/accent"
+                    android:thumbTint="@color/accent" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/space_md"
+                android:background="@color/divider" />
+
+            <!-- 操作步骤：主操作「保存」用全局强调色 -->
+            <TextView
+                style="@style/Widget.PsApk.GroupLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/group_steps" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnPerson"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/person" />
+
+                <Button
+                    android:id="@+id/btnGarment"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/garment" />
+
+                <Button
+                    android:id="@+id/btnConfirmCutout"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:text="@string/confirm_cutout" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    style="@style/Widget.PsApk.Button.Primary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/save" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

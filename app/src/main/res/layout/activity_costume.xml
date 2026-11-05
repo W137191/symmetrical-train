@@ -2,146 +2,284 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1424"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:background="@color/bg_app"
+    android:fitsSystemWindows="true">
 
+    <!-- 统一标题栏：左侧图标返回，右侧等宽占位保证标题居中 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/toolbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_toolbar"
+        android:paddingStart="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_sm">
 
-        <Button
+        <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← 返回" />
+            android:layout_width="@dimen/space_xl"
+            android:layout_height="@dimen/space_xl"
+            android:background="@drawable/bg_btn_icon"
+            android:src="@drawable/ic_back"
+            android:scaleType="center"
+            android:contentDescription="@string/cd_back" />
 
         <TextView
+            style="@style/Widget.PsApk.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="换装相机"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:text="@string/title_costume" />
+
+        <View
+            android:layout_width="@dimen/space_xl"
+            android:layout_height="1dp" />
     </LinearLayout>
 
-    <com.example.psapk.CostumeView
-        android:id="@+id/costumeView"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#000000" />
+        android:minHeight="@dimen/canvas_min_height"
+        android:layout_marginStart="@dimen/page_padding"
+        android:layout_marginEnd="@dimen/page_padding"
+        android:layout_marginTop="@dimen/space_sm"
+        android:background="@drawable/bg_canvas_frame">
 
-    <!-- 文字描述 -->
-    <LinearLayout
+        <com.example.psapk.CostumeView
+            android:id="@+id/costumeView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/space_lg">
+
+            <ImageView
+                android:layout_width="@dimen/empty_icon_size"
+                android:layout_height="@dimen/empty_icon_size"
+                android:src="@drawable/ic_image_placeholder"
+                android:contentDescription="@null" />
+
+            <TextView
+                style="@style/Widget.PsApk.EmptyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/empty_costume_title" />
+
+            <TextView
+                style="@style/Widget.PsApk.EmptySub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/empty_costume_sub" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/editDesc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="描述想穿的服装/角色，如：超级英雄披风、公主皇冠、哆啦A梦"
-            android:textColorHint="#888888"
-            android:textColor="#FFFFFF"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <Button
-            android:id="@+id/btnApplyDesc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="应用描述" />
-    </LinearLayout>
-
-    <!-- 服装道具快捷选择 -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.95"
+        android:layout_marginTop="@dimen/space_sm"
+        android:paddingStart="@dimen/page_padding"
+        android:paddingEnd="@dimen/page_padding"
+        android:paddingBottom="@dimen/space_sm"
         android:scrollbars="none">
 
         <LinearLayout
-            android:id="@+id/costumeList"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
+            android:orientation="vertical">
 
-    <!-- 微调 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+            <!-- 服装描述 -->
+            <TextView
+                style="@style/Widget.PsApk.GroupLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/group_desc" />
 
-        <Button
-            android:id="@+id/btnResetPos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="重置位置" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="缩放"
-            android:textColor="#CCCCCC"
-            android:textSize="12sp" />
+                <EditText
+                    android:id="@+id/editDesc"
+                    style="@style/Widget.PsApk.EditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:hint="@string/hint_desc"
+                    android:inputType="text"
+                    android:imeOptions="actionDone" />
 
-        <SeekBar
-            android:id="@+id/seekScale"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="600"
-            android:progress="100" />
+                <Button
+                    android:id="@+id/btnApplyDesc"
+                    style="@style/Widget.PsApk.Button.Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/apply_desc" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="旋转"
-            android:textColor="#CCCCCC"
-            android:textSize="12sp" />
+            <!-- 快捷道具：横向滚动，窄屏也不会挤压 -->
+            <TextView
+                style="@style/Widget.PsApk.GroupLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/group_presets" />
 
-        <SeekBar
-            android:id="@+id/seekRotate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="360"
-            android:progress="180" />
-    </LinearLayout>
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:scrollbars="none">
 
-    <!-- 选图 / 保存 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/costumeList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
-        <Button
-            android:id="@+id/btnGallery"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="相册" />
+            <!-- 微调：拆成两行，避免两个 SeekBar 在窄屏被压成一条 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/btnCamera"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="拍照" />
+                <TextView
+                    style="@style/Widget.PsApk.GroupLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/group_adjust" />
 
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="保存" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnResetPos"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reset_pos" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/Widget.PsApk.Caption"
+                    android:layout_width="@dimen/space_xl"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scale" />
+
+                <SeekBar
+                    android:id="@+id/seekScale"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="600"
+                    android:progress="100"
+                    android:progressTint="@color/accent"
+                    android:thumbTint="@color/accent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/Widget.PsApk.Caption"
+                    android:layout_width="@dimen/space_xl"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rotate" />
+
+                <SeekBar
+                    android:id="@+id/seekRotate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="360"
+                    android:progress="180"
+                    android:progressTint="@color/accent"
+                    android:thumbTint="@color/accent" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/space_md"
+                android:background="@color/divider" />
+
+            <!-- 选图与导出 -->
+            <TextView
+                style="@style/Widget.PsApk.GroupLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/group_actions" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnGallery"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:drawableStart="@drawable/ic_gallery"
+                    android:drawablePadding="@dimen/space_xs"
+                    android:text="@string/gallery" />
+
+                <Button
+                    android:id="@+id/btnCamera"
+                    style="@style/Widget.PsApk.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:drawableStart="@drawable/ic_camera"
+                    android:drawablePadding="@dimen/space_xs"
+                    android:text="@string/camera" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    style="@style/Widget.PsApk.Button.Primary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/save" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
